@@ -140,9 +140,9 @@ end
 
 function Logger:EnqueueLine(text, r,g,b)
   self:EnsureWindow()
-  if not self.frame:IsShown() then
-    self.frame:Show()
-  end
+  -- if not self.frame:IsShown() then
+  --   self.frame:Show()
+  -- end
   table.insert(self.messageQueue, { text=text, r=r, g=g, b=b })
 end
 
