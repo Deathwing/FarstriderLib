@@ -400,7 +400,9 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
 
     -- Create virtual NavNodes for start and goal locations
     local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes)
-    DevTool:AddData(startNavNode, "Start NavNode") -- MRP_REMOVE_LINE
+    if DevTool then -- MRP_REMOVE_LINE
+        DevTool:AddData(startNavNode, "Start NavNode") -- MRP_REMOVE_LINE
+    end -- MRP_REMOVE_LINE
 
     local dynamicFromNode = self.allNodes["dynamic:from"]
     if dynamicFromNode then
@@ -427,7 +429,9 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     end
 
     local goalNavNode = self:CreateVirtualNavNode(goalLocation, validTravelNodes)
-    DevTool:AddData(goalNavNode, "Goal NavNode") -- MRP_REMOVE_LINE
+    if DevTool then -- MRP_REMOVE_LINE
+        DevTool:AddData(goalNavNode, "Goal NavNode") -- MRP_REMOVE_LINE
+    end -- MRP_REMOVE_LINE
 
     local startLoc = startNavNode:getLocation()
     local goalLoc = goalNavNode:getLocation()
@@ -443,13 +447,15 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
 
     -- Dijkstra setup
     local queue = {} ---@type NavNode[]
-    DevTool:AddData(queue, "Queue") -- MRP_REMOVE_LINE
     local navCostTable = {} ---@type table<NavKey, number>
-    DevTool:AddData(navCostTable, "Nav Cost Table") -- MRP_REMOVE_LINE
     local cameFromTable = {} ---@type table<NavKey, NavNode>
-    DevTool:AddData(cameFromTable, "Came From Table") -- MRP_REMOVE_LINE
     local cameFromEdgeTable = {} ---@type table<NavKey, NavEdge>
-    DevTool:AddData(cameFromEdgeTable, "Came From Edge Table") -- MRP_REMOVE_LINE
+    if DevTool then -- MRP_REMOVE_LINE
+        DevTool:AddData(queue, "Queue") -- MRP_REMOVE_LINE
+        DevTool:AddData(navCostTable, "Nav Cost Table") -- MRP_REMOVE_LINE
+        DevTool:AddData(cameFromTable, "Came From Table") -- MRP_REMOVE_LINE
+        DevTool:AddData(cameFromEdgeTable, "Came From Edge Table") -- MRP_REMOVE_LINE
+    end -- MRP_REMOVE_LINE
 
     navCostTable[startNavNode.key] = 0
     table.insert(queue, startNavNode)
@@ -615,9 +621,11 @@ function Pathfinding:PrintPath(optimizedPath, path, edges)
         TomTom:ReloadWaypoints()
     end
 
-    DevTool:AddData(path, "Path Nodes") -- MRP_REMOVE_LINE
-    DevTool:AddData(edges, "Path Edges") -- MRP_REMOVE_LINE
-    DevTool:AddData(optimizedPath, "Optimized Path Edges") -- MRP_REMOVE_LINE
+    if DevTool then -- MRP_REMOVE_LINE
+        DevTool:AddData(path, "Path Nodes") -- MRP_REMOVE_LINE
+        DevTool:AddData(edges, "Path Edges") -- MRP_REMOVE_LINE
+        DevTool:AddData(optimizedPath, "Optimized Path Edges") -- MRP_REMOVE_LINE
+    end -- MRP_REMOVE_LINE
 
     -- local optimizedPath = {}
     
