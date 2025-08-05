@@ -212,7 +212,7 @@ function Navigate(startMapId, startX, startY, startZ, goalMapId, endX, endY, end
     local goalLocation = { mapId = goalMapId, pos = { x = endX, y = endY, z = endZ == 0 and GetZ(goalMapId) or endZ }, isUI = true } ---@type NavLocation, NavLocation
     local optimizedPath, path, edges = WPT.Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     
-    WPT.Pathfinding:PrintPath(optimizedPath, path, edges)
+    WPT.Pathfinding:PrintPath(optimizedPath, path, edges) -- MRP_REMOVE_LINE
 
     return optimizedPath, path, edges
 end

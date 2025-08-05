@@ -616,10 +616,10 @@ function Pathfinding:PrintPath(optimizedPath, path, edges)
         return
     end
 
-    if TomTom then
-        TomTom.waydb:ResetProfile()
-        TomTom:ReloadWaypoints()
-    end
+    if TomTom then -- MRP_REMOVE_LINE
+        TomTom.waydb:ResetProfile() -- MRP_REMOVE_LINE
+        TomTom:ReloadWaypoints() -- MRP_REMOVE_LINE
+    end -- MRP_REMOVE_LINE
 
     if DevTool then -- MRP_REMOVE_LINE
         DevTool:AddData(path, "Path Nodes") -- MRP_REMOVE_LINE
