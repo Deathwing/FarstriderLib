@@ -1,7 +1,7 @@
-## Interface: 110107, 50500
+## Interface: 110107, 110200, 50500
 ## Version: 1.0.0
 ## Title: Waypoint Test
 ## Notes: A simple test for dynamic waypoint navigation
-## Author: Savi
+## Author: Savi, Deathwing
 
 embed.xml
