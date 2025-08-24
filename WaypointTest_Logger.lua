@@ -124,7 +124,8 @@ function Logger:CreateLogWindow()
   f:SetScript("OnUpdate", function() Logger:FlushQueue() end)
 
   -- show right away
-  f:Show()
+  -- f:Show()
+  f:Hide()
 
   -- store refs
   self.frame       = f
