@@ -59,7 +59,7 @@ local function GetUIMapIdAndLocalCoordsFromWaypoint(waypointLocation)
     if not waypointLocation then
         WPT.Logger:Error("Invalid waypoint data.")
         return nil
-    end 
+    end
 
     return C_Map.GetMapPosFromWorldPos(waypointLocation.loc.mapId, CreateVector2D(waypointLocation.loc.pos.x, waypointLocation.loc.pos.y))
 end
@@ -73,7 +73,7 @@ local function PrintWaypoint(prefix, waypointLocation)
         return
     end
 
-    -- Get UIMapId from the continent and its position on the continent map 
+    -- Get UIMapId from the continent and its position on the continent map
     local uiMapId, mapPosition = C_Map.GetMapPosFromWorldPos(waypointLocation.loc.mapId, CreateVector2D(waypointLocation.loc.pos.x, waypointLocation.loc.pos.y))
     if not uiMapId or not mapPosition then
         WPT.Logger:Error(string.format("No UIMapId found for locaId %d with mapId %d at position (%.2f, %.2f)", waypointLocation.locaId, waypointLocation.loc.mapId, waypointLocation.loc.pos.x, waypointLocation.loc.pos.y))
@@ -211,7 +211,7 @@ function Navigate(startMapId, startX, startY, startZ, goalMapId, endX, endY, end
     local startLocation = { mapId = startMapId, pos = { x = startX, y = startY, z = startZ == 0 and GetZ(startMapId) or startZ }, isUI = true } ---@type NavLocation, NavLocation
     local goalLocation = { mapId = goalMapId, pos = { x = endX, y = endY, z = endZ == 0 and GetZ(goalMapId) or endZ }, isUI = true } ---@type NavLocation, NavLocation
     local optimizedPath, path, edges = WPT.Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
-    
+
     WPT.Pathfinding:PrintPath(optimizedPath, path, edges) -- MRP_REMOVE_LINE
 
     return optimizedPath, path, edges
@@ -280,27 +280,27 @@ f:SetScript("OnEvent", function()
     -- /dump TEST:PrintWaypoint(1)
 
     -- for index, waypoint in ipairs(MRP.Waypoints) do
-        -- print(string.format("Waypoint %d:", index))
-        -- PrintWaypointData(waypoint)
-        -- print("--------------------------------------------------")
+    -- print(string.format("Waypoint %d:", index))
+    -- PrintWaypointData(waypoint)
+    -- print("--------------------------------------------------")
     -- end
 
     WPT.Pathfinding:Initialize()
     for _, navLocation in pairs(WPT.Pathfinding.allNodes) do -- MRP_REMOVE_LINE
-        if not navLocation.isDynamic then  -- MRP_REMOVE_LINE
+        if not navLocation.isDynamic then                    -- MRP_REMOVE_LINE
             -- Draw the waypoint pin on the map -- MRP_REMOVE_LINE
 
-            local valid = #navLocation.edges == 0 or not navLocation.edges[1].condition or navLocation.edges[1].condition() -- MRP_REMOVE_LINE
-            SetWaypoint( -- MRP_REMOVE_LINE
-                navLocation:getLocation(),  -- MRP_REMOVE_LINE
+            local valid = #navLocation.edges == 0 or not navLocation.edges[1].condition or navLocation.edges[1].condition()              -- MRP_REMOVE_LINE
+            SetWaypoint(                                                                                                                 -- MRP_REMOVE_LINE
+                navLocation:getLocation(),                                                                                               -- MRP_REMOVE_LINE
                 valid and "Interface\\AddOns\\WaypointTest\\Images\\GoldRedDot" or "Interface\\AddOns\\WaypointTest\\Images\\GoldRedDot" -- MRP_REMOVE_LINE
-                -- ,{ text = navLocation.key, edges = navLocation.edges } -- MRP_REMOVE_LINE
-            ) -- MRP_REMOVE_LINE
-        end -- MRP_REMOVE_LINE
-    end -- MRP_REMOVE_LINE
+            -- ,{ text = navLocation.key, edges = navLocation.edges } -- MRP_REMOVE_LINE
+            )                                                                                                                            -- MRP_REMOVE_LINE
+        end                                                                                                                              -- MRP_REMOVE_LINE
+    end                                                                                                                                  -- MRP_REMOVE_LINE
 
-    if DevTool then -- MRP_REMOVE_LINE
-        DevTool:AddData(MRP.Waypoints, "Waypoints") -- MRP_REMOVE_LINE
-        DevTool:AddData(WPT, "WaypointTest") -- MRP_REMOVE_LINE
-    end -- MRP_REMOVE_LINE
+    if DevTool then                                                                                                                      -- MRP_REMOVE_LINE
+        DevTool:AddData(MRP.Waypoints, "Waypoints")                                                                                      -- MRP_REMOVE_LINE
+        DevTool:AddData(WPT, "WaypointTest")                                                                                             -- MRP_REMOVE_LINE
+    end                                                                                                                                  -- MRP_REMOVE_LINE
 end)
