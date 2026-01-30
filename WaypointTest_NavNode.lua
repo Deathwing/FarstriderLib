@@ -18,8 +18,8 @@ WPT.NavNode = NavNode
 ---@param precision? number        # how many decimal places to keep; default = 4
 ---@return NavKey
 function NavNode.makeNavKey(mapId, pos, precision)
-    precision = precision or 4           -- default to 4 decimal places
-    local scale = 10 ^ precision        -- e.g. 10⁴ = 10000
+    precision = precision or 4   -- default to 4 decimal places
+    local scale = 10 ^ precision -- e.g. 10⁴ = 10000
 
     -- multiply & round to nearest integer
     local xi = math.floor(pos.x * scale + 0.5)
@@ -40,12 +40,12 @@ function NavNode.create(mapId, pos, isUI, edges)
     local loc = { mapId = mapId, pos = pos, isUI = isUI }
     local self = setmetatable({
         getLocation = function() return loc end,
-        isDynamic = false,
-        mapId = mapId,
-        pos   = pos,
-        key   = key,
-        edges = edges or {},
-        tempEdges = {}
+        isDynamic   = false,
+        mapId       = mapId,
+        pos         = pos,
+        key         = key,
+        edges       = edges or {},
+        tempEdges   = {}
     }, NavNode)
     return self
 end
@@ -59,10 +59,10 @@ function NavNode.createDynamic(getLoc, suffix, edges)
     local key = "dynamic:" .. suffix
     local self = setmetatable({
         getLocation = getLoc,
-        isDynamic = true,
-        key   = key,
-        edges = edges or {},
-        tempEdges = {}
+        isDynamic   = true,
+        key         = key,
+        edges       = edges or {},
+        tempEdges   = {}
     }, NavNode)
     return self
 end

@@ -63,11 +63,11 @@ function SetWaypoint(waypoint, texture, options)
             local overlay = CreateFrame("Frame", "WayPointTestMapOverlay", WorldMapFrame.BorderFrame)
             overlay:SetFrameStrata("HIGH")
             overlay:SetFrameLevel(9000)
----@diagnostic disable-next-line: param-type-mismatch
+            ---@diagnostic disable-next-line: param-type-mismatch
             overlay:SetAllPoints(true)
         end
 
-        local worldmap = CreateFrame("Button", nil, WaypointTestMapOverlay)
+        local worldmap = CreateFrame("Button", nil, WayPointTestMapOverlay)
         worldmap.icon = worldmap:CreateTexture(nil, "OVERLAY")
         worldmap.icon:SetAllPoints()
         worldmap.icon:SetBlendMode("BLEND")
@@ -128,7 +128,7 @@ function SetWaypoint(waypoint, texture, options)
 
                 StartLocationButton.icon:SetVertexColor(1, 1, 1) -- Reset start color
                 StartLocationButton = nil
-                GoalLocationButton.icon:SetVertexColor(1, 1, 1) -- Reset goal color
+                GoalLocationButton.icon:SetVertexColor(1, 1, 1)  -- Reset goal color
                 GoalLocationButton = nil
                 StartLocation = nil
                 GoalLocation = nil
@@ -182,19 +182,19 @@ GoalLocationButton = nil ---@type Button
 function DistanceTestHere()
     print("Start Location:", StartLocation.mapId, StartLocation.pos.x, StartLocation.pos.y, StartLocation.pos.z, StartLocation.isUI)
     print("Goal Location:", GoalLocation.mapId, GoalLocation.pos.x, GoalLocation.pos.y, GoalLocation.pos.z, GoalLocation.isUI)
-    
+
     ---@type NavLocation, NavLocation
     local startLocation, goalLocation =
         { mapId = StartLocation.mapId, pos = { x = StartLocation.pos.x, y = StartLocation.pos.y, z = StartLocation.pos.z }, isUI = StartLocation.isUI },
         { mapId = GoalLocation.mapId, pos = { x = GoalLocation.pos.x, y = GoalLocation.pos.y, z = GoalLocation.pos.z }, isUI = GoalLocation.isUI }
 
-        local _, worldA = C_Map.GetWorldPosFromMapPos(startLocation.mapId, CreateVector2D(startLocation.pos.x, startLocation.pos.y))
-        local _, worldB = C_Map.GetWorldPosFromMapPos(goalLocation.mapId, CreateVector2D(goalLocation.pos.x, goalLocation.pos.y))
-        if worldA and worldB then
-            local dist = math.sqrt((worldA.x - worldB.x)^2 + (worldA.y - worldB.y)^2 + (startLocation.pos.z - goalLocation.pos.z)^2)
-            WPT.Logger:Info("Distance between start and goal locations: " .. dist)
-            print("Distance between start and goal locations: " .. dist)
-        end
+    local _, worldA = C_Map.GetWorldPosFromMapPos(startLocation.mapId, CreateVector2D(startLocation.pos.x, startLocation.pos.y))
+    local _, worldB = C_Map.GetWorldPosFromMapPos(goalLocation.mapId, CreateVector2D(goalLocation.pos.x, goalLocation.pos.y))
+    if worldA and worldB then
+        local dist = math.sqrt((worldA.x - worldB.x) ^ 2 + (worldA.y - worldB.y) ^ 2 + (startLocation.pos.z - goalLocation.pos.z) ^ 2)
+        WPT.Logger:Info("Distance between start and goal locations: " .. dist)
+        print("Distance between start and goal locations: " .. dist)
+    end
 end
 
 function NavigationTestHere()

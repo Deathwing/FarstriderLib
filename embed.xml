@@ -3,16 +3,16 @@
 	<!-- Navigation created with love by Savi -->
 	<!-- ===================================  -->
 
-	<Script file='libs\HereBeDragons\HereBeDragons-2.0.lua'/> <!-- MRP_REMOVE_LINE -->
-	<Script file='libs\HereBeDragons\HereBeDragons-Pins-2.0.lua'/> <!-- MRP_REMOVE_LINE -->
+	<Script file='libs\HereBeDragons\HereBeDragons-2.0.lua' /> <!-- MRP_REMOVE_LINE -->
+	<Script file='libs\HereBeDragons\HereBeDragons-Pins-2.0.lua' /> <!-- MRP_REMOVE_LINE -->
 
-	<Script file='WaypointTest.d.lua'/> <!-- MRP_REMOVE_LINE -->
-	<Script file='WaypointTest_Stub.lua'/>
-	<Script file='WaypointTest_Logger.lua'/> <!-- MRP_REMOVE_LINE -->
-	<Script file='WaypointTest_Types.lua'/>
-	<Script file='MRP_Types.lua'/> <!-- MRP_REMOVE_LINE -->
-	<Script file='WaypointTest_Waypoints.lua'/> <!-- MRP_REMOVE_LINE -->
-	<Script file='WaypointTest_NavNode.lua'/>
-	<Script file='WaypointTest_Pathfinding.lua'/>
-	<Script file='WaypointTest_Core.lua'/> 
+	<Script file='WaypointTest.d.lua' /> <!-- MRP_REMOVE_LINE -->
+	<Script file='WaypointTest_Stub.lua' />
+	<Script file='WaypointTest_Logger.lua' /> <!-- MRP_REMOVE_LINE -->
+	<Script file='WaypointTest_Types.lua' />
+	<Script file='playground/MRP_Types.lua' /> <!-- MRP_REMOVE_LINE -->
+	<Script file='WaypointTest_Waypoints.lua' /> <!-- MRP_REMOVE_LINE -->
+	<Script file='WaypointTest_NavNode.lua' />
+	<Script file='WaypointTest_Pathfinding.lua' />
+	<Script file='WaypointTest_Core.lua' />
 </Ui>

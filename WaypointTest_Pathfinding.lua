@@ -9,7 +9,7 @@ Pathfinding.ignoredUIMapIds = {
     [2311] = true
 }
 
-TRAVEL_COST_MULTIPLIER = 1 / 55 -- avg dragonriding speed
+TRAVEL_COST_MULTIPLIER = 1 / 55     -- avg dragonriding speed
 if WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
     TRAVEL_COST_MULTIPLIER = 1 / 31 -- avg 280% flying speed
 end
@@ -23,8 +23,8 @@ function Pathfinding:len(t)
 end
 
 local mapTypeOverrides = {
-    [125] = { mapType = Enum.UIMapType.Zone }, -- Dalaran: Northrend
-    [627] = { mapType = Enum.UIMapType.Zone }, -- Dalaran: Broken Isles
+    [125] = { mapType = Enum.UIMapType.Zone },  -- Dalaran: Northrend
+    [627] = { mapType = Enum.UIMapType.Zone },  -- Dalaran: Broken Isles
     [1670] = { mapType = Enum.UIMapType.Zone }, -- Oribos
     [1671] = { mapType = Enum.UIMapType.Zone }, -- Oribos
     [1672] = { mapType = Enum.UIMapType.Zone }, -- Oribos
@@ -33,7 +33,7 @@ local mapTypeOverrides = {
 }
 
 local isolatedAreaIds = {
-    -- Eastern Kingdom 
+    -- Eastern Kingdom
     [201] = 0, -- Kelp'thar Forest
     [203] = 0, -- Vashj'ir
     [204] = 0, -- Abyssal Depths,
@@ -121,7 +121,7 @@ function Pathfinding:GetWorldDistanceBetween(navLocationA, navLocationB)
         local _, posB = C_Map.GetWorldPosFromMapPos(navLocationB.mapId, CreateVector2D(navLocationB.pos.x, navLocationB.pos.y))
 
         if posA and posB then
-            return math.sqrt((posA.x - posB.x)^2 + (posA.y - posB.y)^2 + (navLocationA.pos.z - navLocationB.pos.z)^2)
+            return math.sqrt((posA.x - posB.x) ^ 2 + (posA.y - posB.y) ^ 2 + (navLocationA.pos.z - navLocationB.pos.z) ^ 2)
         else
             WPT.Logger:Warning("GetWorldDistanceBetween could not resolve world positions for nav locations:", navLocationA.mapId, navLocationB.mapId)
             return nil
@@ -181,7 +181,6 @@ end
 ---@param loc2 Location|NavLocation
 ---@return boolean
 function Pathfinding:HasDirectFlyPath(loc1, loc2)
-
     local uiMapID1 = loc1.mapId
     local uiMapID2 = loc2.mapId
 
@@ -253,7 +252,7 @@ function Pathfinding:ConvertWaypointLocationToNavLocation(waypointLocation, grap
         WPT.Logger:Error(string.format("Could not resolve UIMapId for locaId %d (continent mapId %d)", waypointLocation.locaId, waypointLocation.loc.mapId))
         return nil
     end
-    
+
     -- local continentInfo = self:GetContinentMapRoot(uiMapId)
     -- if not continentInfo then
     --     WPT.Logger:Error(string.format("Could not find continent information for map ID %d", uiMapId))
@@ -312,9 +311,9 @@ function Pathfinding:FindClosestNavConnections(location, nodes)
                 local _, worldA = C_Map.GetWorldPosFromMapPos(location.mapId, CreateVector2D(location.pos.x, location.pos.y))
                 local _, worldB = C_Map.GetWorldPosFromMapPos(navNodeLoc.mapId, CreateVector2D(navNodeLoc.pos.x, navNodeLoc.pos.y))
                 if worldA and worldB then
-                    local dist = math.sqrt((worldA.x - worldB.x)^2 + (worldA.y - worldB.y)^2+ (location.pos.z - navNodeLoc.pos.z)^2)
+                    local dist = math.sqrt((worldA.x - worldB.x) ^ 2 + (worldA.y - worldB.y) ^ 2 + (location.pos.z - navNodeLoc.pos.z) ^ 2)
                     table.insert(connections, { navNode = navNode, cost = dist * TRAVEL_COST_MULTIPLIER })
-                    
+
                     -- WPT.Logger:Info(string.format("  ✓ Reachable node %d at (%.2f, %.2f), distance = %.1f", navNodeLoc.mapId, navNodeLoc.pos.x, navNodeLoc.pos.y, dist))
                 else
                     WPT.Logger:Warning(string.format("  ✗ Could not resolve world position for node %d", navNodeLoc.mapId))
@@ -337,7 +336,7 @@ function Pathfinding:GetNodeLoca(locaId, locaArgs)
     end
     return loca
 end
-    
+
 function Pathfinding:GetNodeLocaDirect(locaId)
     if not locaId then
         return "Unknown Location (no locaId provided)"
@@ -400,9 +399,9 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
 
     -- Create virtual NavNodes for start and goal locations
     local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes)
-    if DevTool then -- MRP_REMOVE_LINE
+    if DevTool then                                    -- MRP_REMOVE_LINE
         DevTool:AddData(startNavNode, "Start NavNode") -- MRP_REMOVE_LINE
-    end -- MRP_REMOVE_LINE
+    end                                                -- MRP_REMOVE_LINE
 
     local dynamicFromNode = self.allNodes["dynamic:from"]
     if dynamicFromNode then
@@ -429,9 +428,9 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     end
 
     local goalNavNode = self:CreateVirtualNavNode(goalLocation, validTravelNodes)
-    if DevTool then -- MRP_REMOVE_LINE
+    if DevTool then                                  -- MRP_REMOVE_LINE
         DevTool:AddData(goalNavNode, "Goal NavNode") -- MRP_REMOVE_LINE
-    end -- MRP_REMOVE_LINE
+    end                                              -- MRP_REMOVE_LINE
 
     local startLoc = startNavNode:getLocation()
     local goalLoc = goalNavNode:getLocation()
@@ -439,7 +438,7 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
         local _, worldA = C_Map.GetWorldPosFromMapPos(startLoc.mapId, CreateVector2D(startLoc.pos.x, startLoc.pos.y))
         local _, worldB = C_Map.GetWorldPosFromMapPos(goalLoc.mapId, CreateVector2D(goalLoc.pos.x, goalLoc.pos.y))
         if worldA and worldB then
-            local dist = math.sqrt((worldA.x - worldB.x)^2 + (worldA.y - worldB.y)^2 + (startLoc.pos.z - goalLoc.pos.z)^2)
+            local dist = math.sqrt((worldA.x - worldB.x) ^ 2 + (worldA.y - worldB.y) ^ 2 + (startLoc.pos.z - goalLoc.pos.z) ^ 2)
             table.insert(startNavNode.edges, { to = goalNavNode, cost = dist * DIRECT_TRAVEL_COST_MULTIPLIER, locaId = MRP.SpecialLocaId.TravelTo })
             table.insert(goalNavNode.edges, { to = startNavNode, cost = dist * DIRECT_TRAVEL_COST_MULTIPLIER, locaId = MRP.SpecialLocaId.TravelTo })
         end
@@ -450,12 +449,12 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     local navCostTable = {} ---@type table<NavKey, number>
     local cameFromTable = {} ---@type table<NavKey, NavNode>
     local cameFromEdgeTable = {} ---@type table<NavKey, NavEdge>
-    if DevTool then -- MRP_REMOVE_LINE
-        DevTool:AddData(queue, "Queue") -- MRP_REMOVE_LINE
-        DevTool:AddData(navCostTable, "Nav Cost Table") -- MRP_REMOVE_LINE
-        DevTool:AddData(cameFromTable, "Came From Table") -- MRP_REMOVE_LINE
+    if DevTool then                                                -- MRP_REMOVE_LINE
+        DevTool:AddData(queue, "Queue")                            -- MRP_REMOVE_LINE
+        DevTool:AddData(navCostTable, "Nav Cost Table")            -- MRP_REMOVE_LINE
+        DevTool:AddData(cameFromTable, "Came From Table")          -- MRP_REMOVE_LINE
         DevTool:AddData(cameFromEdgeTable, "Came From Edge Table") -- MRP_REMOVE_LINE
-    end -- MRP_REMOVE_LINE
+    end                                                            -- MRP_REMOVE_LINE
 
     navCostTable[startNavNode.key] = 0
     table.insert(queue, startNavNode)
@@ -463,7 +462,7 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     -- Explore graph
     while #queue > 0 do
         -- Use a priority queue based on our navCostTable
-        table.sort(queue, function(a,b) return (navCostTable[a.key] or math.huge) < (navCostTable[b.key] or math.huge) end)
+        table.sort(queue, function(a, b) return (navCostTable[a.key] or math.huge) < (navCostTable[b.key] or math.huge) end)
 
         local current = table.remove(queue, 1) ---@type NavNode
         -- WPT.Logger:InfoGreen("Chose node ", current.mapId, "at position (", current.pos.x, ",", current.pos.y, ") with cost", navCostTable[current.key] or 0)
@@ -472,7 +471,7 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
             WPT.Logger:InfoGreen("Reached goal node ", currentLoc.mapId, "at position (", currentLoc.pos.x, ",", currentLoc.pos.y, ")")
             break
         end
-        
+
         -- WPT.Logger:Info("Current node has edges:", #current.edges or 0)
         for edge in WPT.NavNode.iterateAllEdges(current) do
             if not edge.condition or edge.condition() then
@@ -545,7 +544,7 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     --         table.insert(optimizedPath, { checkpoint = edges[i].to:getLocation(), loca = self:GetNodeLoca(edges[i].locaId), actionOptions = edges[i].actionOptions, id = edges[i].to.key })
     --     end
     -- end
-    
+
     -- local skip = {}
     -- for i, _ in ipairs(edges) do
     --     skip[i] = false
@@ -598,7 +597,7 @@ function Pathfinding:CreateWaypointGraph(waypoints)
                     navEdge = { to = fromNav, cost = waypoint.cost, locaId = waypoint.to.locaId, locaArgs = waypoint.to.locaArgs, flag = waypoint.to.flags, type = waypoint.to.type, condition = waypoint.to.condition, actionOptions = waypoint.to.actionOptions, important = waypoint.to.important }
                     table.insert(toNav.edges, navEdge)
                 end
-                
+
                 WPT.Logger:Info("Adding waypoint ", fromNav.key, " to ", toNav.key, " for id ", waypoint.id, " with locaId ", waypoint.from.locaId, " from edges ", #fromNav.edges, " to edges ", #toNav.edges)
             end
         end
@@ -616,19 +615,19 @@ function Pathfinding:PrintPath(optimizedPath, path, edges)
         return
     end
 
-    if TomTom then -- MRP_REMOVE_LINE
-        TomTom.waydb:ResetProfile() -- MRP_REMOVE_LINE
-        TomTom:ReloadWaypoints() -- MRP_REMOVE_LINE
-    end -- MRP_REMOVE_LINE
+    if TomTom then                                             -- MRP_REMOVE_LINE
+        TomTom.waydb:ResetProfile()                            -- MRP_REMOVE_LINE
+        TomTom:ReloadWaypoints()                               -- MRP_REMOVE_LINE
+    end                                                        -- MRP_REMOVE_LINE
 
-    if DevTool then -- MRP_REMOVE_LINE
-        DevTool:AddData(path, "Path Nodes") -- MRP_REMOVE_LINE
-        DevTool:AddData(edges, "Path Edges") -- MRP_REMOVE_LINE
+    if DevTool then                                            -- MRP_REMOVE_LINE
+        DevTool:AddData(path, "Path Nodes")                    -- MRP_REMOVE_LINE
+        DevTool:AddData(edges, "Path Edges")                   -- MRP_REMOVE_LINE
         DevTool:AddData(optimizedPath, "Optimized Path Edges") -- MRP_REMOVE_LINE
-    end -- MRP_REMOVE_LINE
+    end                                                        -- MRP_REMOVE_LINE
 
     -- local optimizedPath = {}
-    
+
     -- local skip = {}
     -- for i, _ in ipairs(edges) do
     --     skip[i] = false
