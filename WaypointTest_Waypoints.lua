@@ -6,9 +6,16 @@ local pool = {}
 
 local idx = 0
 
+-- When false, SetWaypoint is a no-op (no dots on the world map)
+WPT_SHOW_MAP_DOTS = false
+
 ---@param waypoint Location
 ---@param texture string
 function SetWaypoint(waypoint, texture, options)
+    if not WPT_SHOW_MAP_DOTS then
+        return
+    end
+
     if not options then
         return
     end
@@ -94,7 +101,7 @@ function SetWaypoint(waypoint, texture, options)
 
         worldmap:SetScript("OnEnter", function(self)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetText(name)
+            GameTooltip:SetText(name, 1, 1, 1)
             GameTooltip:AddLine("Waypoint " .. (options.index or -1))
             GameTooltip:AddLine("World: " .. options.text)
             GameTooltip:AddLine("Local: " .. WPT.NavNode.makeNavKey(point.m, { x = point.x, y = point.y, z = 0 }))

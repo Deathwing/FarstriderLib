@@ -3,8 +3,10 @@
 	<!-- Navigation created with love by Savi -->
 	<!-- ===================================  -->
 
-	<Script file='libs\HereBeDragons\HereBeDragons-2.0.lua' /> <!-- MRP_REMOVE_LINE -->
-	<Script file='libs\HereBeDragons\HereBeDragons-Pins-2.0.lua' /> <!-- MRP_REMOVE_LINE -->
+	<Script file='libs\HereBeDragons\LibStub\LibStub.lua' />
+	<Script file='libs\HereBeDragons\CallbackHandler-1.0\CallbackHandler-1.0.lua' />
+	<Script file='libs\HereBeDragons\HereBeDragons-2.0.lua' />
+	<Script file='libs\HereBeDragons\HereBeDragons-Pins-2.0.lua' />
 
 	<Script file='WaypointTest.d.lua' /> <!-- MRP_REMOVE_LINE -->
 	<Script file='WaypointTest_Stub.lua' />

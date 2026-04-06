@@ -9,6 +9,37 @@ Pathfinding.ignoredUIMapIds = {
     [2311] = true
 }
 
+-- Cached valid travel nodes (invalidated when conditions might change)
+Pathfinding._validTravelNodesCache = nil ---@type table<NavKey, NavNode>?
+Pathfinding._validTravelNodesCacheTime = 0
+
+function Pathfinding:InvalidateCache()
+    self._validTravelNodesCache = nil
+    self._validTravelNodesCacheTime = 0
+    self._continentCache = {}
+end
+
+-- Initialize continent cache
+Pathfinding._continentCache = {}
+
+function Pathfinding:GetValidTravelNodes()
+    local now = GetTime()
+    -- Reuse cache if less than 2 seconds old (conditions don't change between rapid step clicks)
+    if self._validTravelNodesCache and (now - self._validTravelNodesCacheTime) < 2 then
+        return self._validTravelNodesCache
+    end
+
+    local validTravelNodes = {} ---@type table<NavKey, NavNode>
+    for _, navNode in pairs(self.allNodes) do
+        if self:NodeContainsAnyActiveEdge(navNode) then
+            validTravelNodes[navNode.key] = navNode
+        end
+    end
+    self._validTravelNodesCache = validTravelNodes
+    self._validTravelNodesCacheTime = now
+    return validTravelNodes
+end
+
 TRAVEL_COST_MULTIPLIER = 1 / 55     -- avg dragonriding speed
 if WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
     TRAVEL_COST_MULTIPLIER = 1 / 31 -- avg 280% flying speed
@@ -168,11 +199,16 @@ end
 ---@param uiMapID UIMapId
 ---@return UiMapDetails?
 function Pathfinding:GetContinentMapRoot(uiMapID)
+    if self._continentCache[uiMapID] ~= nil then
+        return self._continentCache[uiMapID] or nil
+    end
+
     local mapInfo = C_Map.GetMapInfo(uiMapID)
     while mapInfo and mapInfo.parentMapID and mapInfo.mapType > Enum.UIMapType.Continent do
         mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID)
     end
 
+    self._continentCache[uiMapID] = mapInfo or false
     return mapInfo
 end
 
@@ -390,12 +426,7 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     WPT.Logger:Info(string.format("Goal : map %d (%.2f, %.2f, %.2f)", goalLocation.mapId, goalLocation.pos.x, goalLocation.pos.y, goalLocation.pos.z))
 
     ---@type table<NavKey, NavNode>
-    local validTravelNodes = {}
-    for _, navNode in pairs(self.allNodes) do
-        if self:NodeContainsAnyActiveEdge(navNode) then
-            validTravelNodes[navNode.key] = navNode
-        end
-    end
+    local validTravelNodes = self:GetValidTravelNodes()
 
     -- Create virtual NavNodes for start and goal locations
     local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes)
@@ -445,48 +476,126 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     end
 
     -- Dijkstra setup
-    local queue = {} ---@type NavNode[]
     local navCostTable = {} ---@type table<NavKey, number>
     local cameFromTable = {} ---@type table<NavKey, NavNode>
     local cameFromEdgeTable = {} ---@type table<NavKey, NavEdge>
+    local visited = {} ---@type table<NavKey, boolean>
+
+    -- Binary min-heap helpers (indexed by priority stored in navCostTable)
+    local heap = {} ---@type NavNode[]
+    local heapSize = 0
+    local heapIndex = {} ---@type table<NavKey, number> -- maps node key to its index in heap
+
+    local function heapSwap(i, j)
+        heap[i], heap[j] = heap[j], heap[i]
+        heapIndex[heap[i].key] = i
+        heapIndex[heap[j].key] = j
+    end
+
+    local function heapSiftUp(i)
+        while i > 1 do
+            local parent = math.floor(i / 2)
+            if (navCostTable[heap[i].key] or math.huge) < (navCostTable[heap[parent].key] or math.huge) then
+                heapSwap(i, parent)
+                i = parent
+            else
+                break
+            end
+        end
+    end
+
+    local function heapSiftDown(i)
+        while true do
+            local smallest = i
+            local left = 2 * i
+            local right = 2 * i + 1
+            if left <= heapSize and (navCostTable[heap[left].key] or math.huge) < (navCostTable[heap[smallest].key] or math.huge) then
+                smallest = left
+            end
+            if right <= heapSize and (navCostTable[heap[right].key] or math.huge) < (navCostTable[heap[smallest].key] or math.huge) then
+                smallest = right
+            end
+            if smallest ~= i then
+                heapSwap(i, smallest)
+                i = smallest
+            else
+                break
+            end
+        end
+    end
+
+    local function heapPush(node)
+        heapSize = heapSize + 1
+        heap[heapSize] = node
+        heapIndex[node.key] = heapSize
+        heapSiftUp(heapSize)
+    end
+
+    local function heapPop()
+        if heapSize == 0 then return nil end
+        local top = heap[1]
+        heapIndex[top.key] = nil
+        heap[1] = heap[heapSize]
+        if heapSize > 1 then
+            heapIndex[heap[1].key] = 1
+        end
+        heap[heapSize] = nil
+        heapSize = heapSize - 1
+        if heapSize > 0 then
+            heapSiftDown(1)
+        end
+        return top
+    end
+
+    local function heapDecreaseKey(node)
+        local idx = heapIndex[node.key]
+        if idx then
+            heapSiftUp(idx)
+        end
+    end
+
     if DevTool then                                                -- MRP_REMOVE_LINE
-        DevTool:AddData(queue, "Queue")                            -- MRP_REMOVE_LINE
+        DevTool:AddData(heap, "Heap")                              -- MRP_REMOVE_LINE
         DevTool:AddData(navCostTable, "Nav Cost Table")            -- MRP_REMOVE_LINE
         DevTool:AddData(cameFromTable, "Came From Table")          -- MRP_REMOVE_LINE
         DevTool:AddData(cameFromEdgeTable, "Came From Edge Table") -- MRP_REMOVE_LINE
     end                                                            -- MRP_REMOVE_LINE
 
     navCostTable[startNavNode.key] = 0
-    table.insert(queue, startNavNode)
+    heapPush(startNavNode)
 
     -- Explore graph
-    while #queue > 0 do
-        -- Use a priority queue based on our navCostTable
-        table.sort(queue, function(a, b) return (navCostTable[a.key] or math.huge) < (navCostTable[b.key] or math.huge) end)
+    while heapSize > 0 do
+        local current = heapPop() ---@type NavNode
 
-        local current = table.remove(queue, 1) ---@type NavNode
-        -- WPT.Logger:InfoGreen("Chose node ", current.mapId, "at position (", current.pos.x, ",", current.pos.y, ") with cost", navCostTable[current.key] or 0)
-        if current.key == goalNavNode.key then
-            local currentLoc = current:getLocation()
-            WPT.Logger:InfoGreen("Reached goal node ", currentLoc.mapId, "at position (", currentLoc.pos.x, ",", currentLoc.pos.y, ")")
-            break
-        end
+        if visited[current.key] then
+            -- Skip already-settled nodes (may be re-added via decrease-key path)
+        else
+            visited[current.key] = true
 
-        -- WPT.Logger:Info("Current node has edges:", #current.edges or 0)
-        for edge in WPT.NavNode.iterateAllEdges(current) do
-            if not edge.condition or edge.condition() then
-                -- WPT.Logger:Info("  Checking edge to node ", edge.to.mapId, " with cost ", edge.cost or 0)
-                local neighbour = edge.to
-                local edgeCost = edge.cost or math.huge
-                local newCost = (navCostTable[current.key] or math.huge) + edgeCost
-                local oldCost = navCostTable[neighbour.key] or math.huge
+            if current.key == goalNavNode.key then
+                local currentLoc = current:getLocation()
+                WPT.Logger:InfoGreen("Reached goal node ", currentLoc.mapId, "at position (", currentLoc.pos.x, ",", currentLoc.pos.y, ")")
+                break
+            end
 
-                if newCost < oldCost then
-                    -- WPT.Logger:Info("  Found better path to node ", neighbour.mapId, " with cost ", newCost, " (old cost was ", oldCost, ")")
-                    navCostTable[neighbour.key] = newCost
-                    cameFromTable[neighbour.key] = current
-                    cameFromEdgeTable[neighbour.key] = edge
-                    table.insert(queue, neighbour)
+            for edge in WPT.NavNode.iterateAllEdges(current) do
+                if not edge.condition or edge.condition() then
+                    local neighbour = edge.to
+                    local edgeCost = edge.cost or math.huge
+                    local newCost = (navCostTable[current.key] or math.huge) + edgeCost
+                    local oldCost = navCostTable[neighbour.key] or math.huge
+
+                    if newCost < oldCost then
+                        navCostTable[neighbour.key] = newCost
+                        cameFromTable[neighbour.key] = current
+                        cameFromEdgeTable[neighbour.key] = edge
+                        if heapIndex[neighbour.key] then
+                            heapDecreaseKey(neighbour)
+                        else
+                            heapPush(neighbour)
+                        end
+                    end
                 end
             end
         end
