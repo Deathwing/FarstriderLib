@@ -1,2 +1,0 @@
--- WaypointTest.d.lua
-WPT = {}

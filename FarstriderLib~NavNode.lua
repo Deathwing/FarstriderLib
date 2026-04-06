@@ -1,21 +1,22 @@
--- WaypointTest_NavNode.lua
--- local _, WPT = ...
+-- FarstriderLib~NavNode.lua
+-- Navigation graph node used by the Dijkstra pathfinding engine.
 
 ---@class NavNode
----@field getLocation fun(): Location
----@field isDynamic boolean
----@field key NavKey
----@field edges NavEdge[]
----@field tempEdges NavEdge[]
+---@field getLocation fun(): Location  Returns this node's position
+---@field isDynamic boolean            True for nodes whose position is resolved at runtime
+---@field key NavKey                   Deterministic identifier ("mapId:x:y:z" or "dynamic:suffix")
+---@field edges NavEdge[]              Permanent outgoing edges
+---@field tempEdges NavEdge[]          Temporary edges added per-query (cleared after each search)
 
 local NavNode = {}
-WPT.NavNode = NavNode
+NavNode.__index = NavNode
+FarstriderLib.NavNode = NavNode
 
----Create a deterministic key from mapId and position,
----quantizing to a fixed number of decimal places.
----@param mapId    number
----@param pos      Vec3         # { x:number, y:number, z:number }
----@param precision? number        # how many decimal places to keep; default = 4
+--- Build a deterministic string key from a map ID and position.
+--- Quantizes coordinates to `precision` decimal places to merge nearby points.
+---@param mapId number
+---@param pos Vec3
+---@param precision? number  Decimal places to keep (default 4)
 ---@return NavKey
 function NavNode.makeNavKey(mapId, pos, precision)
     precision = precision or 4   -- default to 4 decimal places
@@ -30,9 +31,10 @@ function NavNode.makeNavKey(mapId, pos, precision)
     return string.format("%d:%d:%d:%d", mapId, xi, yi, zi)
 end
 
----Construct a new NavNode
+--- Create a static NavNode at a fixed map position.
 ---@param mapId number
 ---@param pos Vec3
+---@param isUI? boolean  True if `pos` is in UI-map space
 ---@param edges? NavEdge[]
 ---@return NavNode
 function NavNode.create(mapId, pos, isUI, edges)
@@ -50,9 +52,9 @@ function NavNode.create(mapId, pos, isUI, edges)
     return self
 end
 
----Construct a new NavNode
----@param getLoc fun(): Location
----@param suffix string
+--- Create a dynamic NavNode whose position is resolved at runtime.
+---@param getLoc fun(): Location  Callable that returns the current location
+---@param suffix string           Key suffix, e.g. "from" or "to"
 ---@param edges? NavEdge[]
 ---@return NavNode
 function NavNode.createDynamic(getLoc, suffix, edges)
@@ -67,10 +69,16 @@ function NavNode.createDynamic(getLoc, suffix, edges)
     return self
 end
 
---- @param self NavNode The navigation node instance.
---- @return fun():NavEdge Iterator function that yields NavEdge objects.
+---@return string
+function NavNode:__tostring()
+    local loc = self:getLocation()
+    return string.format("NavNode<%s map=%d (%.4f, %.4f)>", self.key, loc.mapId or 0, loc.pos.x or 0, loc.pos.y or 0)
+end
+
+--- Iterate over all edges (permanent + temporary) via a coroutine.
+---@param self NavNode
+---@return fun(): NavEdge
 function NavNode.iterateAllEdges(self)
-    -- Iterate edges and temp edges
     return coroutine.wrap(function()
         if self.edges then
             for _, edge in ipairs(self.edges) do
