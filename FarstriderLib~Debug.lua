@@ -1,6 +1,9 @@
 -- FarstriderLib~Debug.lua
 -- Debug-only world-map pin rendering and interactive testing tools.
 -- Entire file is stripped by MRP_REMOVE_LINE in production.
+-- local _, FarstriderLib = ...
+
+if not FarstriderLib.Internal then return end
 
 local hbdp = LibStub("HereBeDragons-Pins-2.0")
 local pool = {} ---@type table[]  Recycled pin frame objects
@@ -316,9 +319,9 @@ df:SetScript("OnEvent", function()
         if not navLocation.isDynamic then
             local valid = #navLocation.edges == 0 or not navLocation.edges[1].condition or
                 navLocation.edges[1].condition()
-            FarstriderLib.SetWaypoint(
+            FarstriderLib.PlaceFlare(
                 navLocation:getLocation(),
-                valid and (media .. "Images\\GoldGreenDot") or (media .. "Images\\GoldRedDot")
+                valid and (media .. "Media\\GoldGreenDot") or (media .. "Media\\GoldRedDot")
             )
         end
     end

@@ -1,5 +1,20 @@
 -- FarstriderLib~Pathfinding.lua
 -- Dijkstra shortest-path engine over the waypoint navigation graph.
+-- local _, FarstriderLib = ...
+
+if not FarstriderLib.Internal then return end
+
+--- Navigation edge categories.
+---@enum EdgeType
+FarstriderLib.EdgeType = {
+    TRAVEL     = 1000, -- Direct overland / dragonriding travel
+    FLIGHTPATH = 1001, -- Flight master route
+    PORTAL     = 1002, -- Portal (mage portal, world portal, housing)
+    BOAT       = 1003, -- Boat transport
+    ZEPPELIN   = 1004, -- Zeppelin transport
+    ITEM       = 1005, -- Consumable item (hearthstone, wormhole, etc.)
+    SPELL      = 1006, -- Player spell (teleport, astral recall, etc.)
+}
 
 ---@class Pathfinding
 ---@field allNodes table<NavKey, NavNode>  The full navigation graph
@@ -8,7 +23,7 @@ local Pathfinding = {}
 FarstriderLib.Pathfinding = Pathfinding
 
 Pathfinding.allNodes = {} ---@type table<NavKey, NavNode>
-Pathfinding.ignoredUIMapIds = FarstriderData and FarstriderData.Config.IgnoredMaps or {}
+Pathfinding.ignoredUIMapIds = FarstriderLibData and FarstriderLibData.Config.IgnoredMaps or {}
 
 -- Cached valid travel nodes (invalidated when conditions might change)
 Pathfinding._validTravelNodesCache = nil ---@type table<NavKey, NavNode>?
@@ -51,6 +66,30 @@ if WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 end
 
 local DIRECT_TRAVEL_COST_MULTIPLIER = TRAVEL_COST_MULTIPLIER * 0.8
+local elevationOverrides = FarstriderLibData and FarstriderLibData.Config.ElevationOverrides or {}
+
+---@param loc Location|NavLocation
+---@return number? comparableZ
+local function getComparableZ(loc)
+    if not loc or not loc.pos then
+        return nil
+    end
+
+    if loc.pos.z ~= 0 then
+        return loc.pos.z
+    end
+
+    local overrideZ = elevationOverrides[loc.mapId]
+    if overrideZ then
+        return overrideZ
+    end
+
+    if loc.isUI then
+        return nil
+    end
+
+    return loc.pos.z
+end
 
 --- Count entries in a hash table.
 ---@param t table
@@ -61,8 +100,8 @@ function Pathfinding:len(t)
     return count
 end
 
-local mapTypeOverrides = FarstriderData and FarstriderData.Config.MapTypeOverrides or {}
-local isolatedAreaIds = FarstriderData and FarstriderData.Config.IsolatedAreas or {}
+local mapTypeOverrides = FarstriderLibData and FarstriderLibData.Config.MapTypeOverrides or {}
+local isolatedAreaIds = FarstriderLibData and FarstriderLibData.Config.IsolatedAreas or {}
 
 ---@param mapID number
 ---@return boolean
@@ -84,10 +123,11 @@ function Pathfinding:IsMapIsolated(mapID)
     return mapInfo.parentMapID == 0
 end
 
---- Compute the 3D world distance between two nav locations.
+--- Compute world distance between two nav locations.
+--- Uses the Z component only when both elevations are trustworthy.
 --- Returns `math.huge` if they are on disconnected continents.
----@param navLocationA NavLocation
----@param navLocationB NavLocation
+---@param navLocationA Location|NavLocation
+---@param navLocationB Location|NavLocation
 ---@return number?
 function Pathfinding:GetWorldDistanceBetween(navLocationA, navLocationB)
     if not navLocationA or not navLocationB then
@@ -105,8 +145,10 @@ function Pathfinding:GetWorldDistanceBetween(navLocationA, navLocationB)
             CreateVector2D(navLocationB.pos.x, navLocationB.pos.y))
 
         if posA and posB then
-            return math.sqrt((posA.x - posB.x) ^ 2 + (posA.y - posB.y) ^ 2 +
-                (navLocationA.pos.z - navLocationB.pos.z) ^ 2)
+            local comparableZA = getComparableZ(navLocationA)
+            local comparableZB = getComparableZ(navLocationB)
+            local deltaZ = (comparableZA and comparableZB) and (comparableZA - comparableZB) or 0
+            return math.sqrt((posA.x - posB.x) ^ 2 + (posA.y - posB.y) ^ 2 + deltaZ ^ 2)
         else
             FarstriderLib.Logger:Warning("GetWorldDistanceBetween could not resolve world positions for nav locations:",
                 navLocationA.mapId, navLocationB.mapId)
@@ -131,6 +173,11 @@ end
 ---@return number? childMapID
 function Pathfinding:GetMostTopLevelSubZoneAtPosition(parentMapID, pos)
     local mapInfo = C_Map.GetMapInfoAtPosition(parentMapID, pos.x, pos.y)
+    if not mapInfo then
+        -- Nested city/instance maps can fail position lookup; climb their ancestry instead.
+        mapInfo = C_Map.GetMapInfo(parentMapID)
+    end
+
     local parentMapInfo = mapInfo and mapInfo.parentMapID and C_Map.GetMapInfo(mapInfo.parentMapID)
     while parentMapInfo and parentMapInfo.mapType > Enum.UIMapType.Continent do
         mapInfo = parentMapInfo
@@ -285,13 +332,8 @@ function Pathfinding:FindClosestNavConnections(location, nodes)
         if not navNode.isDynamic then
             local navNodeLoc = navNode:getLocation()
             if self:HasDirectFlyPath(location, navNodeLoc) then
-                local _, worldA = C_Map.GetWorldPosFromMapPos(location.mapId,
-                    CreateVector2D(location.pos.x, location.pos.y))
-                local _, worldB = C_Map.GetWorldPosFromMapPos(navNodeLoc.mapId,
-                    CreateVector2D(navNodeLoc.pos.x, navNodeLoc.pos.y))
-                if worldA and worldB then
-                    local dist = math.sqrt((worldA.x - worldB.x) ^ 2 + (worldA.y - worldB.y) ^ 2 +
-                        (location.pos.z - navNodeLoc.pos.z) ^ 2)
+                local dist = self:GetWorldDistanceBetween(location, navNodeLoc)
+                if dist and dist ~= math.huge then
                     table.insert(connections, { navNode = navNode, cost = dist * TRAVEL_COST_MULTIPLIER })
                 else
                     FarstriderLib.Logger:Warning(string.format("  Could not resolve world position for node %d",
@@ -326,11 +368,10 @@ function Pathfinding:GetNodeLocaDirect(locaId)
         return "Unknown Location (no locaId provided)"
     end
 
-    local Data = FarstriderData
-    if Data then
-        local loca = Data.WaypointL and Data.WaypointL[locaId]
+    if FarstriderLibData then
+        local loca = FarstriderLibData.WaypointL and FarstriderLibData.WaypointL[locaId]
         if not loca then
-            loca = Data.L and Data.L["Waypoint_" .. locaId]
+            loca = FarstriderLibData.L and FarstriderLibData.L["Waypoint_" .. locaId]
         end
         if loca then return loca end
     end
@@ -338,19 +379,19 @@ function Pathfinding:GetNodeLocaDirect(locaId)
     -- Fallback: describe by EdgeType name
     local ET = FarstriderLib.EdgeType
     if locaId == ET.TRAVEL then
-        return "Travel to %s"
+        return "Reach the destination"
     elseif locaId == ET.FLIGHTPATH then
-        return "Take flight to %s"
-    elseif locaId == ET.BOAT then
-        return "Take boat from %s to %s"
-    elseif locaId == ET.ZEPPELIN then
-        return "Take zeppelin from %s to %s"
+        return "Talk to the Flightmaster to travel to %s"
     elseif locaId == ET.PORTAL then
-        return "Take portal to %s"
+        return "Take the portal to %s"
+    elseif locaId == ET.BOAT then
+        return "Take the boat from %s to %s"
+    elseif locaId == ET.ZEPPELIN then
+        return "Take the zeppelin from %s to %s"
     elseif locaId == ET.ITEM then
-        return "Use %s to go to %s"
+        return "Use %s to %s"
     elseif locaId == ET.SPELL then
-        return "Cast %s to go to %s"
+        return "Cast %s to %s"
     end
 
     return "Unknown Location (locaId " .. locaId .. ")"
@@ -440,11 +481,8 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     local startLoc = startNavNode:getLocation()
     local goalLoc = goalNavNode:getLocation()
     if self:HasDirectFlyPath(startLoc, goalLoc) then
-        local _, worldA = C_Map.GetWorldPosFromMapPos(startLoc.mapId, CreateVector2D(startLoc.pos.x, startLoc.pos.y))
-        local _, worldB = C_Map.GetWorldPosFromMapPos(goalLoc.mapId, CreateVector2D(goalLoc.pos.x, goalLoc.pos.y))
-        if worldA and worldB then
-            local dist = math.sqrt((worldA.x - worldB.x) ^ 2 + (worldA.y - worldB.y) ^ 2 +
-                (startLoc.pos.z - goalLoc.pos.z) ^ 2)
+        local dist = self:GetWorldDistanceBetween(startLoc, goalLoc)
+        if dist and dist ~= math.huge then
             table.insert(startNavNode.edges,
                 { to = goalNavNode, cost = dist * DIRECT_TRAVEL_COST_MULTIPLIER, locaId = ET.TRAVEL })
             table.insert(goalNavNode.edges,
@@ -600,23 +638,49 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     local virtualGoalKey = goalNavNode.key
     local optimizedPath = {}
 
+    local function isFlightpathEdge(edge)
+        return edge.locaId == ET.FLIGHTPATH
+    end
+
+    local function shouldSkipOptimizedEdge(index)
+        local edge = edges[index]
+        if index == #edges or edge.to.key == virtualGoalKey then
+            return false
+        end
+
+        if edge.locaId == ET.TRAVEL then
+            return true
+        end
+
+        -- Chained taxi hops are still a single player action: pick the final
+        -- destination once and let the route transfer automatically.
+        return isFlightpathEdge(edge) and index + 1 < #edges and isFlightpathEdge(edges[index + 1])
+    end
+
+    local function getOptimizedStepLocation(index)
+        local edge = edges[index]
+        if edge.important and not isFlightpathEdge(edge) and index > 1 then
+            return edges[index - 1].to:getLocation()
+        end
+
+        return edge.to:getLocation()
+    end
+
+    local function getOptimizedStepCompletionLocation(index)
+        return edges[index].to:getLocation()
+    end
+
     for i = 1, #edges do
         local edge = edges[i]
 
-        local isFinalTravelToGoal = edge.to.key == virtualGoalKey
-        local isFlightpath = edge.locaId == ET.FLIGHTPATH
-        local isIntermediateTravel = not isFinalTravelToGoal and
-            (edge.locaId == ET.TRAVEL or (i + 1 < #edges and isFlightpath and edges[i + 1].locaId == ET.FLIGHTPATH))
-
-        -- Skip intermediate travel edges, but keep the final one to the actual goal
-        if not isIntermediateTravel or i == #edges then
+        if not shouldSkipOptimizedEdge(i) then
             table.insert(optimizedPath, {
                 id = edge.to.key,
-                loc = (edge.important and not isFlightpath and i > 1) and edges[i - 1].to:getLocation() or
-                    edge.to:getLocation(),
+                loc = getOptimizedStepLocation(i),
+                completionLoc = getOptimizedStepCompletionLocation(i),
                 loca = self:GetNodeLoca(edge.locaId, edge.locaArgs),
                 actionOptions = edge.actionOptions,
-                checkDistance = not (i == #edges or edge.important)
+                checkDistance = i ~= #edges
             })
         else
             FarstriderLib.Logger:Info("Skipping intermediate travel-to edge to " .. edge.to.key)
@@ -706,14 +770,14 @@ function Pathfinding:PrintPath(optimizedPath, path, edges)
 
     local media = FarstriderLib.media_path
 
-    FarstriderLib.ClearWaypoints() -- MRP_REMOVE_LINE
+    FarstriderLib.ClearFlares() -- MRP_REMOVE_LINE
 
     for i, edge in ipairs(optimizedPath) do
         local loc = edge.loc or edge.checkpoint or edge.enter
         if loc then
             FarstriderLib.Logger:Info("Instruction: " .. edge.loca)
 
-            FarstriderLib.SetWaypoint(loc, media .. "Images\\GoldGreenDot", {
+            FarstriderLib.PlaceFlare(loc, media .. "Media\\GoldGreenDot", {
                 index = i - 1,
                 text = self:GetNodeLoca(edge.locaId, edge.locaArgs),
             })
@@ -723,10 +787,10 @@ function Pathfinding:PrintPath(optimizedPath, path, edges)
     end
 end
 
---- Build the navigation graph from FarstriderData and connect nearby nodes.
+--- Build the navigation graph from FarstriderLibData and connect nearby nodes.
 function Pathfinding:Initialize()
     local ET = FarstriderLib.EdgeType
-    local waypoints = FarstriderData and FarstriderData.Waypoints or {}
+    local waypoints = FarstriderLibData and FarstriderLibData.Waypoints or {}
     self.allNodes = self:CreateWaypointGraph(waypoints)
     local navEdge ---@type NavEdge
 

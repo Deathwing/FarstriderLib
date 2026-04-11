@@ -1,21 +1,22 @@
 -- FarstriderLib~Core.lua
 -- Public navigation API and PLAYER_LOGIN bootstrap.
+-- local _, FarstriderLib = ...
 
-local Data = FarstriderData
+if not FarstriderLib.Internal then return end
 
---- Look up a corrected Z elevation from FarstriderData config.
+--- Look up a corrected Z elevation from FarstriderLibData config.
 --- Many Shadowlands / Dragonflight maps share a continent but differ in altitude;
 --- this table prevents incorrect "direct fly" distance calculations.
 ---@param mapId number
 ---@return number
 local function GetZ(mapId)
-    local overrides = Data and Data.Config and Data.Config.ElevationOverrides
+    local overrides = FarstriderLibData and FarstriderLibData.Config and FarstriderLibData.Config.ElevationOverrides
     return overrides and overrides[mapId] or 0
 end
 
 --- Find the shortest path between two explicit map positions.
 --- Coordinates use UI-map space (0-1 range). Pass z = 0 to auto-resolve
---- elevation from FarstriderData.Config.ElevationOverrides.
+--- elevation from FarstriderLibData.Config.ElevationOverrides.
 ---@param startMapId MapId
 ---@param startX number
 ---@param startY number
@@ -25,7 +26,7 @@ end
 ---@param endY number
 ---@param endZ number
 ---@return table[] optimizedPath, NavNode[] path, NavEdge[] edges
-function FarstriderLib.Navigate(startMapId, startX, startY, startZ, goalMapId, endX, endY, endZ)
+function FarstriderLib.FindTrail(startMapId, startX, startY, startZ, goalMapId, endX, endY, endZ)
     local startLocation = { mapId = startMapId, pos = { x = startX, y = startY, z = startZ == 0 and GetZ(startMapId) or startZ }, isUI = true } ---@type NavLocation
     local goalLocation = { mapId = goalMapId, pos = { x = endX, y = endY, z = endZ == 0 and GetZ(goalMapId) or endZ }, isUI = true } ---@type NavLocation
     local optimizedPath, path, edges = FarstriderLib.Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
@@ -42,7 +43,7 @@ end
 ---@param endY number
 ---@param endZ number
 ---@return table[]? optimizedPath, NavNode[]? path, NavEdge[]? edges
-function FarstriderLib.NavigateTo(goalMapId, endX, endY, endZ)
+function FarstriderLib.FindTrailTo(goalMapId, endX, endY, endZ)
     local playerMapId = C_Map.GetBestMapForUnit("player")
     if not playerMapId then
         FarstriderLib.Logger:Error("No map found for the player.")
@@ -68,7 +69,7 @@ function FarstriderLib.NavigateTo(goalMapId, endX, endY, endZ)
         end
     end
 
-    return FarstriderLib.Navigate(playerMapId, playerPosition.x, playerPosition.y, 0, goalMapId, endX, endY, endZ)
+    return FarstriderLib.FindTrail(playerMapId, playerPosition.x, playerPosition.y, 0, goalMapId, endX, endY, endZ)
 end
 
 -- Auto-initialize on PLAYER_LOGIN

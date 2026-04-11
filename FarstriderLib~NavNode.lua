@@ -1,5 +1,8 @@
 -- FarstriderLib~NavNode.lua
 -- Navigation graph node used by the Dijkstra pathfinding engine.
+-- local _, FarstriderLib = ...
+
+if not FarstriderLib.Internal then return end
 
 ---@class NavNode
 ---@field getLocation fun(): Location  Returns this node's position

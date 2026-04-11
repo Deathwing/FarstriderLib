@@ -1,7 +1,0 @@
-## Interface: 120001, 50503, 40402, 30405, 20505, 11508
-## Version: 1.0.0
-## Title: FarstriderLib
-## Notes: Navigation pathfinding library for World of Warcraft addons
-## Author: Savi, Deathwing
-
-embed.xml

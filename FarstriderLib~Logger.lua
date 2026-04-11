@@ -2,6 +2,9 @@
 -- Scrollable in-game log window for debug builds.
 -- Entire file is stripped by MRP_REMOVE_LINE in production.
 -- Toggle with /fslog.
+-- local _, FarstriderLib = ...
+
+if not FarstriderLib.Internal then return end
 
 ---@class Logger
 ---@field frame Frame?

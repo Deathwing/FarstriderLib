@@ -1,43 +1,27 @@
 -- FarstriderLib~Init.lua
--- Versioned global initialization (DNL pattern).
--- Higher-versioned copies silently replace lower ones.
+-- local _, FarstriderLib = ...
 
----@class FarstriderLib
----@field VERSION number
----@field media_path string Addon media root, e.g. "Interface\\AddOns\\WaypointTest\\"
----@field EdgeType table<string, number>
----@field Pathfinding Pathfinding
----@field NavNode NavNode
----@field Logger Logger
----@field Util FarstriderLibUtil
----@field UI FarstriderLibUI
----@field Debug table
----@field _debugStartLocation? Location
----@field _debugGoalLocation? Location
----@field _debugStartButton? any
----@field _debugGoalButton? any
----@field _setWaypointImpl? fun(waypoint: Location, texture: string, options?: table)
+local VERSION = 10003
 
-local VERSION = 1
+if _G.FarstriderLib and (_G.FarstriderLib.VERSION or 0) >= VERSION then return end
 
-if FarstriderLib and (FarstriderLib.VERSION or 0) >= VERSION then return end
-
----@class FarstriderLib
-FarstriderLib = FarstriderLib or {}
 FarstriderLib.VERSION = VERSION
+FarstriderLib.Internal = {}
 
---- Auto-detect media path from this file's location via `debugstack`.
-FarstriderLib.media_path = string.match(debugstack(1, 1, 0), "AddOns\\(.-)\\") or "WaypointTest"
-FarstriderLib.media_path = "Interface\\AddOns\\" .. FarstriderLib.media_path .. "\\"
-
---- Navigation edge categories.
----@enum EdgeType
-FarstriderLib.EdgeType = {
-    TRAVEL     = 1, -- Direct overland / dragonriding travel
-    FLIGHTPATH = 2, -- Flight master route
-    BOAT       = 3, -- Boat transport
-    ZEPPELIN   = 4, -- Zeppelin transport
-    PORTAL     = 5, -- Portal (mage portal, world portal, housing)
-    ITEM       = 6, -- Consumable item (hearthstone, wormhole, etc.)
-    SPELL      = 7, -- Player spell (teleport, astral recall, etc.)
-}
+-- ── Auto-detect the Interface path to this library folder ────────────
+-- debugstack() returns "path/to/file.lua:line: ..." when the chunk loads.
+-- We strip the filename to get the directory, which lets media references
+-- work regardless of which addon embeds FL.
+do
+    local stack = debugstack(1, 1, 0) or ""
+    local dir = stack:match("^(.+[/\\])FarstriderLib~Init%.lua") or ""
+    -- Normalise to backslash (WoW media paths use backslashes)
+    dir = dir:gsub("/", "\\")
+    -- Strip everything before "Interface\" — PlaySoundFile / SetFont
+    -- require paths rooted at "Interface\\" not the full disk path.
+    dir = dir:gsub("^.*(Interface\\)", "%1")
+    --- Base Interface path to this FarstriderLib folder (trailing backslash).
+    --- Example: "Interface\\AddOns\\MountRoutePlanner\\Libs\\FarstriderLib\\"
+    ---@type string
+    FarstriderLib.media_path = dir
+end

@@ -1,6 +1,10 @@
----@meta
 -- FarstriderLib~Types.lua
--- EmmyLua type definitions for FarstriderLib and FarstriderData.
+-- local _, FarstriderLib = ...
+
+if not FarstriderLib.Internal then return end
+
+---@meta
+-- EmmyLua type definitions for FarstriderLib.
 -- Stripped in production via MRP_REMOVE_LINE.
 
 ---------------------------------------------------------------------------
@@ -20,7 +24,7 @@
 ---@field isUI? boolean
 
 ---------------------------------------------------------------------------
--- Waypoint data structures (populated by FarstriderData)
+-- Waypoint data structures
 ---------------------------------------------------------------------------
 
 --- Describes an action the player can take (item use, spell cast, etc.).
@@ -87,35 +91,11 @@
 ---@alias NavKey string  -- Deterministic node key: "mapId:x:y:z"
 
 ---------------------------------------------------------------------------
--- FarstriderData class shape
----------------------------------------------------------------------------
-
----@class FarstriderData
----@field VERSION number
----@field Waypoints Waypoint[]
----@field Connections { helpfulItems: number[] }
----@field L table<string, string>               General localization strings
----@field AreaL table<string, NavLocation>       Area name -> resolved location
----@field WaypointL table<number, string>        locaId -> localized format string
----@field Config FarstriderDataConfig
----@field HousingData? table                     Housing data (set at runtime when housing is available)
-
----@class FarstriderDataConfig
----@field ElevationOverrides table<number, number>       mapId -> z coordinate
----@field MapTypeOverrides table<number, { mapType: number }>
----@field IsolatedAreas table<number, number>            mapId -> groupId
----@field IgnoredMaps table<number, boolean>
----@field IsolatedZones table<number, boolean>
-
----------------------------------------------------------------------------
 -- Saved variables
 ---------------------------------------------------------------------------
 
 ---@class FarstriderDataCharacterSettings
 ---@field housingExitLocation? NavLocation
-
----@type FarstriderDataCharacterSettings
-FarstriderData_CharacterSettings = FarstriderData_CharacterSettings or {}
 
 ---------------------------------------------------------------------------
 -- External globals (third-party addons / WoW constants)
