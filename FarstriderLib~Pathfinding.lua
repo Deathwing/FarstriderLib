@@ -18,12 +18,10 @@ FarstriderLib.EdgeType = {
 
 ---@class Pathfinding
 ---@field allNodes table<NavKey, NavNode>  The full navigation graph
----@field ignoredUIMapIds table<number, boolean>
 local Pathfinding = {}
 FarstriderLib.Pathfinding = Pathfinding
 
 Pathfinding.allNodes = {} ---@type table<NavKey, NavNode>
-Pathfinding.ignoredUIMapIds = FarstriderLibData and FarstriderLibData.Config.IgnoredMaps or {}
 
 -- Cached valid travel nodes (invalidated when conditions might change)
 Pathfinding._validTravelNodesCache = nil ---@type table<NavKey, NavNode>?
@@ -66,8 +64,6 @@ if WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 end
 
 local DIRECT_TRAVEL_COST_MULTIPLIER = TRAVEL_COST_MULTIPLIER * 0.8
-local elevationOverrides = FarstriderLibData and FarstriderLibData.Config.ElevationOverrides or {}
-
 ---@param loc Location|NavLocation
 ---@return number? comparableZ
 local function getComparableZ(loc)
@@ -79,7 +75,7 @@ local function getComparableZ(loc)
         return loc.pos.z
     end
 
-    local overrideZ = elevationOverrides[loc.mapId]
+    local overrideZ = FarstriderLib.Data.CONFIG.ElevationOverrides[loc.mapId]
     if overrideZ then
         return overrideZ
     end
@@ -100,9 +96,6 @@ function Pathfinding:len(t)
     return count
 end
 
-local mapTypeOverrides = FarstriderLibData and FarstriderLibData.Config.MapTypeOverrides or {}
-local isolatedAreaIds = FarstriderLibData and FarstriderLibData.Config.IsolatedAreas or {}
-
 ---@param mapID number
 ---@return boolean
 function Pathfinding:IsMapIsolated(mapID)
@@ -112,8 +105,9 @@ function Pathfinding:IsMapIsolated(mapID)
         return false
     end
 
-    if mapTypeOverrides[mapID] then
-        mapInfo.mapType = mapTypeOverrides[mapID].mapType
+    local mapTypeOverride = FarstriderLib.Data.CONFIG.MapTypeOverrides[mapID]
+    if mapTypeOverride then
+        mapInfo.mapType = mapTypeOverride.mapType
     end
 
     if mapInfo.mapType == Enum.UIMapType.Dungeon then
@@ -242,7 +236,8 @@ function Pathfinding:HasDirectFlyPath(loc1, loc2)
 
         local subzone1 = self:GetMostTopLevelSubZoneAtPosition(uiMapID1, loc1.pos) or uiMapID1
         local subzone2 = self:GetMostTopLevelSubZoneAtPosition(uiMapID2, loc2.pos) or uiMapID2
-        return isolatedAreaIds[subzone1] == isolatedAreaIds[subzone2]
+        local isolatedAreas = FarstriderLib.Data.CONFIG.IsolatedAreas
+        return isolatedAreas[subzone1] == isolatedAreas[subzone2]
     end
 
     return false
@@ -368,33 +363,12 @@ function Pathfinding:GetNodeLocaDirect(locaId)
         return "Unknown Location (no locaId provided)"
     end
 
-    if FarstriderLibData then
-        local loca = FarstriderLibData.WaypointL and FarstriderLibData.WaypointL[locaId]
-        if not loca then
-            loca = FarstriderLibData.L and FarstriderLibData.L["Waypoint_" .. locaId]
-        end
-        if loca then return loca end
+    local loca = FarstriderLib.Data.GetLocalizedString(locaId)
+    if not loca then
+        return "Unknown Location (locaId " .. locaId .. ")"
     end
 
-    -- Fallback: describe by EdgeType name
-    local ET = FarstriderLib.EdgeType
-    if locaId == ET.TRAVEL then
-        return "Reach the destination"
-    elseif locaId == ET.FLIGHTPATH then
-        return "Talk to the Flightmaster to travel to %s"
-    elseif locaId == ET.PORTAL then
-        return "Take the portal to %s"
-    elseif locaId == ET.BOAT then
-        return "Take the boat from %s to %s"
-    elseif locaId == ET.ZEPPELIN then
-        return "Take the zeppelin from %s to %s"
-    elseif locaId == ET.ITEM then
-        return "Use %s to %s"
-    elseif locaId == ET.SPELL then
-        return "Cast %s to %s"
-    end
-
-    return "Unknown Location (locaId " .. locaId .. ")"
+    return loca
 end
 
 --- Create a virtual NavNode at the specified location with edges to the closest NavNodes
@@ -787,11 +761,10 @@ function Pathfinding:PrintPath(optimizedPath, path, edges)
     end
 end
 
---- Build the navigation graph from FarstriderLibData and connect nearby nodes.
+--- Build the navigation graph from data and connect nearby nodes.
 function Pathfinding:Initialize()
     local ET = FarstriderLib.EdgeType
-    local waypoints = FarstriderLibData and FarstriderLibData.Waypoints or {}
-    self.allNodes = self:CreateWaypointGraph(waypoints)
+    self.allNodes = self:CreateWaypointGraph(FarstriderLib.Data.WAYPOINTS)
     local navEdge ---@type NavEdge
 
     -- Connect the nav nodes that are directly reachable with each other by creating edges
@@ -814,10 +787,16 @@ function Pathfinding:Initialize()
     FarstriderLib.Logger:Info("Pathfinding initialized with", self:len(self.allNodes), "nodes.")
 end
 
+--- Clear the pathfinding cache and re-initialize. Call this after updating any data.
+function Pathfinding:Rebuild()
+    self:InvalidateCache()
+    self:Initialize()
+end
+
 --- Override the travel cost multiplier and rebuild the graph.
 ---@param newMultiplier number
 function Pathfinding:ChangeTravelCostMultiplier(newMultiplier)
     TRAVEL_COST_MULTIPLIER = newMultiplier
     FarstriderLib.Logger:Info("Travel cost multiplier changed to:", newMultiplier)
-    self:Initialize()
+    self:Rebuild()
 end

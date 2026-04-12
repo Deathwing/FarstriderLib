@@ -4,19 +4,19 @@
 
 if not FarstriderLib.Internal then return end
 
---- Look up a corrected Z elevation from FarstriderLibData config.
+--- Look up a corrected Z elevation from config.
 --- Many Shadowlands / Dragonflight maps share a continent but differ in altitude;
 --- this table prevents incorrect "direct fly" distance calculations.
 ---@param mapId number
 ---@return number
 local function GetZ(mapId)
-    local overrides = FarstriderLibData and FarstriderLibData.Config and FarstriderLibData.Config.ElevationOverrides
+    local overrides = FarstriderLib.Data.CONFIG.ElevationOverrides
     return overrides and overrides[mapId] or 0
 end
 
 --- Find the shortest path between two explicit map positions.
 --- Coordinates use UI-map space (0-1 range). Pass z = 0 to auto-resolve
---- elevation from FarstriderLibData.Config.ElevationOverrides.
+--- elevation from config.ElevationOverrides.
 ---@param startMapId MapId
 ---@param startX number
 ---@param startY number
@@ -76,5 +76,5 @@ end
 local f = CreateFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function()
-    FarstriderLib.Pathfinding:Initialize()
+    FarstriderLib.Pathfinding:Rebuild()
 end)

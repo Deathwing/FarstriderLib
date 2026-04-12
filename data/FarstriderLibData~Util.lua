@@ -114,3 +114,9 @@ function Util.CanUseItem(itemId)
 
     return false
 end
+
+---Returns true if the player's current bind location is supported, false otherwise
+---@return boolean
+function Util.IsBindLocationSupported()
+    return FarstriderLibData.AreaL[GetBindLocation()] ~= nil
+end

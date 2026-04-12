@@ -5,6 +5,7 @@
 	<Script file="FarstriderLib~Init.lua" />
 
 	<!-- Module files (load order matters) -->
+	<Script file='FarstriderLib~Data.lua' />
 	<Script file='FarstriderLib~Stub.lua' />
 	<Script file='FarstriderLib~Logger.lua' /> <!-- MRP_REMOVE_LINE -->
 	<Script file='FarstriderLib~NavNode.lua' />

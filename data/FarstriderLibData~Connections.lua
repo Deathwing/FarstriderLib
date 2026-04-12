@@ -986,3 +986,17 @@ end
 addDynamicItemWithMultipleIds(hearthstones, FarstriderLibData.Util.GetBindingLocation, GetBindLocation, (select(3, UnitRace("player")) == 1 and GetExpansionLevel() >= 10) and 12.5 or 30, function() return FarstriderLibData.AreaL[GetBindLocation()] end) -- Hearthstones
 
 table.sort(Connections.helpfulItems, function(a, b) return a < b end)
+
+if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+    local f = CreateFrame("Frame")
+    f:RegisterEvent("PLAYER_HOUSE_LIST_UPDATED")
+    f:SetScript("OnEvent", function(_, _, ...)
+        local houses = ...
+        if houses then
+            for _, house in ipairs(houses) do
+                FarstriderLibData.HousingData = house
+                break
+            end
+        end
+    end)
+end

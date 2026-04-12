@@ -5,7 +5,22 @@
 
 if not FarstriderLib.Internal then return end
 
-local hbdp = LibStub("HereBeDragons-Pins-2.0")
+local hbdp
+local warnedMissingHbdPins = false
+
+local function GetHBDPins()
+    if hbdp then
+        return hbdp
+    end
+
+    if not LibStub then
+        return nil
+    end
+
+    hbdp = LibStub("HereBeDragons-Pins-2.0", true)
+    return hbdp
+end
+
 local pool = {} ---@type table[]  Recycled pin frame objects
 local activePoints = {} ---@type table[]  Currently displayed pin objects
 local idx = 0
@@ -59,6 +74,15 @@ local function SetWaypointImpl(waypoint, texture, options)
             world = true,
             silent = true,
         })
+        return
+    end
+
+    local pins = GetHBDPins()
+    if not pins then
+        if not warnedMissingHbdPins and FarstriderLib.Logger and FarstriderLib.Logger.Warning then
+            warnedMissingHbdPins = true
+            FarstriderLib.Logger:Warning("HereBeDragons-Pins-2.0 is unavailable; debug world map dots are disabled.")
+        end
         return
     end
 
@@ -183,13 +207,16 @@ local function SetWaypointImpl(waypoint, texture, options)
     point.worldmap.point = point
     point.waypoint = waypoint
 
-    hbdp:AddWorldMapIconMap("FarstriderLib", point.worldmap, point.m, point.x, point.y, 3)
+    pins:AddWorldMapIconMap("FarstriderLib", point.worldmap, point.m, point.x, point.y, 3)
     table.insert(activePoints, point)
 end
 
 --- Return all active pin frames to the pool and remove their map icons.
 local function ClearAllWaypoints()
-    hbdp:RemoveAllWorldMapIcons("FarstriderLib")
+    local pins = GetHBDPins()
+    if pins then
+        pins:RemoveAllWorldMapIcons("FarstriderLib")
+    end
     for _, point in ipairs(activePoints) do
         point.worldmap:Hide()
         point.worldmap.icon:SetVertexColor(1, 1, 1)

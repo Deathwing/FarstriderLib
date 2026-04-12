@@ -14,9 +14,19 @@ It provides the runtime logic used to compute travel paths between map locations
 ### Public API
 
 ```lua
-local optimizedPath, path, edges = FarstriderLib.FindTrail(startMapId, startX, startY, 0, goalMapId, endX, endY, 0)
-local optimizedPath, path, edges = FarstriderLib.FindTrailTo(goalMapId, endX, endY, 0)
+-- Via the versioned API table (recommended)
+local optimizedPath, path, edges = FarstriderLib_API.FindTrail(startMapId, startX, startY, 0, goalMapId, endX, endY, 0)
+local optimizedPath, path, edges = FarstriderLib_API.FindTrailTo(goalMapId, endX, endY, 0)
+
+-- Re-initialize after data changes
+FarstriderLib_API.Rebuild()
+
+-- Access data layer
+local waypoints = FarstriderLib_API.DATA.WAYPOINTS
+local config    = FarstriderLib_API.DATA.CONFIG
 ```
+
+The legacy `FarstriderLib.FindTrail` / `FarstriderLib.FindTrailTo` globals still work but will be removed in a future update.
 
 ### Dependency
 
