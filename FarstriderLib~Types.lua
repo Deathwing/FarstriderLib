@@ -22,6 +22,7 @@ if not FarstriderLib.Internal then return end
 
 --- A directed edge in the navigation graph.
 ---@class NavEdge
+---@field from NavNode?            Source node
 ---@field to NavNode              Target node
 ---@field cost number             Estimated travel time in seconds
 ---@field flag number             WaypointLocation flags copy
@@ -31,6 +32,7 @@ if not FarstriderLib.Internal then return end
 ---@field actionOptions? ActionOption[]
 ---@field type number
 ---@field important boolean
+---@field skipOptimized boolean?
 
 ---------------------------------------------------------------------------
 -- Aliases

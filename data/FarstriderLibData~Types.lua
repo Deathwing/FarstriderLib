@@ -43,6 +43,7 @@ if not FarstriderLibData.Internal then return end
 ---@field dynLoc? fun(): Location   Dynamic position resolver (e.g. player location)
 ---@field type number               1 = origin, 2 = destination
 ---@field unknown1 number           Reserved / unused
+---@field uiMapHint? number         UIMapID hint for underground/layered zones (Khaz Algar caves etc.)
 ---@field condition? fun(): boolean Runtime availability check
 ---@field actionOptions? ActionOption[]
 ---@field important? boolean        If true, the step is never collapsed during path optimization
@@ -54,6 +55,7 @@ if not FarstriderLibData.Internal then return end
 ---@field to WaypointLocation
 ---@field bidirectional boolean
 ---@field cost number               Travel time estimate in seconds
+---@field skipOptimized? boolean    Suppress this edge as a standalone player-facing step during path optimization
 ---@field condition? fun(): boolean Runtime availability check
 
 ---@alias MapId number   -- Continent or instance map ID (world coordinates)

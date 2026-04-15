@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0
+
+### Fixes
+- `FindClosestNavConnections` now respects `noAutoconnect` on target nodes, preventing virtual start/goal nodes from creating TRAVEL edges to isolated portal exits
+- Flightpath step pins now point to the departure flightmaster instead of the destination
+- Wizard's Sanctum interior nodes (flag 0x40) are now isolated in the nav graph, preventing incorrect auto-connections to exterior Stormwind nodes
+- Direct fly-path shortcut is suppressed when the player is inside the Wizard's Sanctum, forcing the pathfinder to route through the exit door
+
 ## 1.1.0
 
 ### Changes

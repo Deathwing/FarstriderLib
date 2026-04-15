@@ -64,6 +64,10 @@ if WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
 end
 
 local DIRECT_TRAVEL_COST_MULTIPLIER = TRAVEL_COST_MULTIPLIER * 0.8
+
+local WIZARDS_SANCTUM_AREA_ID = 10523
+local WIZARDS_SANCTUM_NAME = C_Map.GetAreaInfo(WIZARDS_SANCTUM_AREA_ID)
+
 ---@param loc Location|NavLocation
 ---@return number? comparableZ
 local function getComparableZ(loc)
@@ -276,7 +280,7 @@ function Pathfinding:ConvertWaypointLocationToNavLocation(waypointLocation, grap
     end
 
     local worldVec = CreateVector2D(waypointLocation.loc.pos.x, waypointLocation.loc.pos.y)
-    local uiMapId, localPos = C_Map.GetMapPosFromWorldPos(waypointLocation.loc.mapId, worldVec)
+    local uiMapId, localPos = C_Map.GetMapPosFromWorldPos(waypointLocation.loc.mapId, worldVec, waypointLocation.uiMapHint)
 
     if not uiMapId or not localPos then
         FarstriderLib.Logger:Error(string.format("Could not resolve UIMapId for locaId %d (continent mapId %d)",
@@ -317,16 +321,21 @@ end
 
 ---@param location NavLocation
 ---@param nodes table<NavKey, NavNode>
+---@param isWizardsSanctum? boolean  Source is inside the Wizard's Sanctum
 ---@return { navNode: NavNode, cost: number }[] connections
-function Pathfinding:FindClosestNavConnections(location, nodes)
+function Pathfinding:FindClosestNavConnections(location, nodes, isWizardsSanctum)
     local connections = {}
     FarstriderLib.Logger:Info(string.format("Finding closest nav connections from map %d at position (%.2f, %.2f, %.2f)",
         location.mapId, location.pos.x, location.pos.y, location.pos.z))
 
     for _, navNode in pairs(nodes) do
-        if not navNode.isDynamic then
-            local navNodeLoc = navNode:getLocation()
-            if self:HasDirectFlyPath(location, navNodeLoc) then
+        if not navNode.isDynamic and not navNode.noAutoconnect then
+            -- Wizard's Sanctum isolation: WS nodes connect only to other WS
+            -- nodes and vice-versa.  Mismatched pairs are skipped.
+            if (isWizardsSanctum or false) ~= (navNode.wizardsSanctum or false) then
+                -- skip
+            elseif self:HasDirectFlyPath(location, navNode:getLocation()) then
+                local navNodeLoc = navNode:getLocation()
                 local dist = self:GetWorldDistanceBetween(location, navNodeLoc)
                 if dist and dist ~= math.huge then
                     table.insert(connections, { navNode = navNode, cost = dist * TRAVEL_COST_MULTIPLIER })
@@ -374,16 +383,17 @@ end
 --- Create a virtual NavNode at the specified location with edges to the closest NavNodes
 ---@param location NavLocation
 ---@param nodes table<NavKey, NavNode>
+---@param isWizardsSanctum? boolean  True when the location is inside the Wizard's Sanctum
 ---@return NavNode
-function Pathfinding:CreateVirtualNavNode(location, nodes)
+function Pathfinding:CreateVirtualNavNode(location, nodes, isWizardsSanctum)
     local ET = FarstriderLib.EdgeType
     local virtualNode = FarstriderLib.NavNode.create(location.mapId, location.pos, true, {})
-    local connections = self:FindClosestNavConnections(location, nodes)
+    local connections = self:FindClosestNavConnections(location, nodes, isWizardsSanctum)
     local navEdge ---@type NavEdge
     for _, connection in ipairs(connections) do
-        navEdge = { to = connection.navNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0, important = false }
+        navEdge = { from = virtualNode, to = connection.navNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0, important = false }
         table.insert(virtualNode.edges, navEdge)
-        navEdge = { to = virtualNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0, important = false }
+        navEdge = { from = connection.navNode, to = virtualNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0, important = false }
         table.insert(connection.navNode.tempEdges, navEdge)
     end
 
@@ -415,8 +425,13 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     ---@type table<NavKey, NavNode>
     local validTravelNodes = self:GetValidTravelNodes()
 
+    -- Check if the player is inside the Wizard's Sanctum (area 10523).
+    -- Virtual start nodes in the sanctum may only auto-connect to other
+    -- sanctum-interior nodes, mirroring the graph-time isolation.
+    local playerInWizardsSanctum = GetSubZoneText() == WIZARDS_SANCTUM_NAME
+
     -- Create virtual NavNodes for start and goal locations
-    local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes)
+    local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes, playerInWizardsSanctum)
     if DevTool then                                    -- MRP_REMOVE_LINE
         DevTool:AddData(startNavNode, "Start NavNode") -- MRP_REMOVE_LINE
     end                                                -- MRP_REMOVE_LINE
@@ -440,7 +455,7 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
                     { mapId = uiMapId, pos = { x = localPos.x, y = localPos.y, z = loc.pos.z }, isUI = true },
                     self.allNodes)
                 for _, connection in ipairs(connections) do
-                    local navEdge = { to = connection.navNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0 }
+                    local navEdge = { from = edge.to, to = connection.navNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0 }
                     table.insert(edge.to.tempEdges, navEdge)
                 end
             end
@@ -454,13 +469,13 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
 
     local startLoc = startNavNode:getLocation()
     local goalLoc = goalNavNode:getLocation()
-    if self:HasDirectFlyPath(startLoc, goalLoc) then
+    if not playerInWizardsSanctum and self:HasDirectFlyPath(startLoc, goalLoc) then
         local dist = self:GetWorldDistanceBetween(startLoc, goalLoc)
         if dist and dist ~= math.huge then
             table.insert(startNavNode.edges,
-                { to = goalNavNode, cost = dist * DIRECT_TRAVEL_COST_MULTIPLIER, locaId = ET.TRAVEL })
+                { from = startNavNode, to = goalNavNode, cost = dist * DIRECT_TRAVEL_COST_MULTIPLIER, locaId = ET.TRAVEL })
             table.insert(goalNavNode.edges,
-                { to = startNavNode, cost = dist * DIRECT_TRAVEL_COST_MULTIPLIER, locaId = ET.TRAVEL })
+                { from = goalNavNode, to = startNavNode, cost = dist * DIRECT_TRAVEL_COST_MULTIPLIER, locaId = ET.TRAVEL })
         end
     end
 
@@ -622,6 +637,10 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
             return false
         end
 
+        if edge.skipOptimized then
+            return true
+        end
+
         if edge.locaId == ET.TRAVEL then
             return true
         end
@@ -633,8 +652,8 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
 
     local function getOptimizedStepLocation(index)
         local edge = edges[index]
-        if edge.important and not isFlightpathEdge(edge) and index > 1 then
-            return edges[index - 1].to:getLocation()
+        if edge.important and edge.from then
+            return edge.from:getLocation()
         end
 
         return edge.to:getLocation()
@@ -681,7 +700,28 @@ function Pathfinding:CreateWaypointGraph(waypoints)
                 graph[fromNav.key] = fromNav
                 graph[toNav.key] = toNav
 
+                -- Tag nodes that should not receive auto-generated TRAVEL edges.
+                -- Only use Blizzard's explicit NoAutoconnect flag (bit 2).
+                -- Do NOT include portal exits (type 2) here — they need TRAVEL
+                -- edges so the player can continue after arriving via portal.
+                if bit.band(waypoint.from.flags, 2) > 0 then
+                    fromNav.noAutoconnect = true
+                end
+                if bit.band(waypoint.to.flags, 2) > 0 then
+                    toNav.noAutoconnect = true
+                end
+
+                -- Wizard's Sanctum interior nodes carry flag 0x40.  They form
+                -- an isolated sub-graph that only auto-connects internally.
+                if bit.band(waypoint.from.flags, 64) > 0 then
+                    fromNav.wizardsSanctum = true
+                end
+                if bit.band(waypoint.to.flags, 64) > 0 then
+                    toNav.wizardsSanctum = true
+                end
+
                 navEdge = {
+                    from = fromNav,
                     to = toNav,
                     cost = waypoint.cost,
                     locaId = waypoint.from.locaId,
@@ -692,11 +732,13 @@ function Pathfinding:CreateWaypointGraph(waypoints)
                     condition = waypoint.from.condition,
                     actionOptions =
                         waypoint.from.actionOptions,
-                    important = waypoint.from.important
+                    important = waypoint.from.important,
+                    skipOptimized = waypoint.skipOptimized
                 }
                 table.insert(fromNav.edges, navEdge)
                 if waypoint.bidirectional then
                     navEdge = {
+                        from = toNav,
                         to = fromNav,
                         cost = waypoint.cost,
                         locaId = waypoint.to.locaId,
@@ -707,7 +749,8 @@ function Pathfinding:CreateWaypointGraph(waypoints)
                         condition = waypoint.to.condition,
                         actionOptions =
                             waypoint.to.actionOptions,
-                        important = waypoint.to.important
+                        important = waypoint.to.important,
+                        skipOptimized = waypoint.skipOptimized
                     }
                     table.insert(toNav.edges, navEdge)
                 end
@@ -769,14 +812,14 @@ function Pathfinding:Initialize()
 
     -- Connect the nav nodes that are directly reachable with each other by creating edges
     for _, navNode in pairs(self.allNodes) do
-        if not navNode.isDynamic then
+        if not navNode.isDynamic and not navNode.noAutoconnect then
             local loc = navNode:getLocation()
             if not self:IsMapIsolated(loc.mapId) then
                 local connections = self:FindClosestNavConnections({ mapId = loc.mapId, pos = loc.pos, isUI = loc.isUI },
-                    self.allNodes)
+                    self.allNodes, navNode.wizardsSanctum)
                 for _, connection in ipairs(connections) do
-                    if connection.navNode.key ~= navNode.key then
-                        navEdge = { to = connection.navNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0, important = false }
+                    if connection.navNode.key ~= navNode.key and not connection.navNode.noAutoconnect then
+                        navEdge = { from = navNode, to = connection.navNode, cost = connection.cost, flag = 0, locaId = ET.TRAVEL, type = 0, important = false }
                         table.insert(navNode.edges, navEdge)
                     end
                 end

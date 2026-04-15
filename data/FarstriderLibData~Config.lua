@@ -53,6 +53,8 @@ Config.MapTypeOverrides = {
     [1672] = { mapType = 3 }, -- Oribos (Zone)
     [1673] = { mapType = 3 }, -- Oribos (Zone)
     [2305] = { mapType = 3 }, -- Dalaran (Zone)
+    [2351] = { mapType = 4 }, -- Player Housing: Razorwind Shores (isolated)
+    [2352] = { mapType = 4 }, -- Player Housing: Founder's Point (isolated)
 }
 
 -- Isolated area groups: mapId -> groupId (same groupId = same isolated area)

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.0
+
+### Fixes
+- Hub transit destination nodes (e.g. Oribos portal exits) now have `NoAutoconnect` flag set, forcing routes through explicit flightpath edges instead of direct TRAVEL connections
+- Hub transit edges marked `skipOptimized` so bare hub names no longer appear as waypoint instructions
+- Player housing maps (Razorwind Shores, Founder's Point) are now marked as isolated, preventing invalid direct fly-path routing from housing plots
+
 ## 1.1.0
 
 ### Changes
