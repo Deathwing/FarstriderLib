@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.1
+
+### Improvements
+- Better handling of Wizard's Sanctum check
+
 ## 1.2.0
 
 ### Fixes

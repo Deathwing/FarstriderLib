@@ -8,24 +8,32 @@ local L = FarstriderLibData.L
 local Util = {}
 FarstriderLibData.Util = Util
 
+local lastPlayerLocation = nil
+
 ---@return Location playerLocation
 function Util.GetPlayerLocation()
     local uiMapId = C_Map.GetBestMapForUnit("player")
-    local uiMapCoords = C_Map.GetPlayerMapPosition(C_Map.GetBestMapForUnit("player"), "player")
+    if not uiMapId then
+        return lastPlayerLocation or { mapId = 0, pos = { x = 0.5, y = 0.5, z = 0 }, isUI = true }
+    end
+
+    local uiMapCoords = C_Map.GetPlayerMapPosition(uiMapId, "player")
 
     if not uiMapCoords then
-        local parentMapId = C_Map.GetMapInfo(uiMapId).parentMapID
+        local mapInfo = C_Map.GetMapInfo(uiMapId)
+        local parentMapId = mapInfo and mapInfo.parentMapID
         if parentMapId then
             uiMapId = parentMapId
 
             local instanceId = EJ_GetInstanceForMap(uiMapId)
             local dungeonEntrances = C_EncounterJournal.GetDungeonEntrancesForMap(parentMapId)
-
-            for _, entrance in ipairs(dungeonEntrances) do
-                if entrance.journalInstanceID == instanceId then
-                    uiMapId = parentMapId
-                    uiMapCoords = entrance.position
-                    break
+            if instanceId and dungeonEntrances then
+                for _, entrance in ipairs(dungeonEntrances) do
+                    if entrance.journalInstanceID == instanceId then
+                        uiMapId = parentMapId
+                        uiMapCoords = entrance.position
+                        break
+                    end
                 end
             end
         end
@@ -35,7 +43,8 @@ function Util.GetPlayerLocation()
         uiMapCoords = { x = 0.5, y = 0.5 }
     end
 
-    return { mapId = uiMapId, pos = { x = uiMapCoords.x, y = uiMapCoords.y, z = 0 }, isUI = true }
+    lastPlayerLocation = { mapId = uiMapId, pos = { x = uiMapCoords.x, y = uiMapCoords.y, z = 0 }, isUI = true }
+    return lastPlayerLocation
 end
 
 ---@return Location

@@ -1,7 +1,7 @@
 -- FarstriderLibData~Init.lua
 -- local _, FarstriderLibData = ...
 
-local VERSION = 10200
+local VERSION = 10300
 
 if FarstriderLibData_API and (FarstriderLibData_API.VERSION or 0) >= VERSION then return end
 

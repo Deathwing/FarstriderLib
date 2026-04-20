@@ -66,7 +66,14 @@ end
 local DIRECT_TRAVEL_COST_MULTIPLIER = TRAVEL_COST_MULTIPLIER * 0.8
 
 local WIZARDS_SANCTUM_AREA_ID = 10523
-local WIZARDS_SANCTUM_NAME = C_Map.GetAreaInfo(WIZARDS_SANCTUM_AREA_ID)
+local WIZARDS_SANCTUM_NAME
+
+local function GetWizardsSanctumName()
+    if WIZARDS_SANCTUM_NAME == nil then
+        WIZARDS_SANCTUM_NAME = C_Map.GetAreaInfo(WIZARDS_SANCTUM_AREA_ID) or false
+    end
+    return WIZARDS_SANCTUM_NAME
+end
 
 ---@param loc Location|NavLocation
 ---@return number? comparableZ
@@ -428,7 +435,7 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     -- Check if the player is inside the Wizard's Sanctum (area 10523).
     -- Virtual start nodes in the sanctum may only auto-connect to other
     -- sanctum-interior nodes, mirroring the graph-time isolation.
-    local playerInWizardsSanctum = GetSubZoneText() == WIZARDS_SANCTUM_NAME
+    local playerInWizardsSanctum = GetSubZoneText() == GetWizardsSanctumName()
 
     -- Create virtual NavNodes for start and goal locations
     local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes, playerInWizardsSanctum)

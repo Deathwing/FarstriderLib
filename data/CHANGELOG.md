@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0
+
+### Changes
+- Updated for build 12.0.5
+
+### Improvements
+- GetPlayerLocation now returns the player's last known position when the player is in an instance without a valid map position, improving pathfinding reliability in certain dungeons and raids
+
 ## 1.2.0
 
 ### Fixes
