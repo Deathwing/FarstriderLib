@@ -63,9 +63,9 @@ if not FarstriderLibData.Internal then return end
 ---@class Config
 ---@field ElevationOverrides { [MapId]: number } mapId -> z coordinate
 ---@field MapTypeOverrides { [MapId]: { mapType: Enum.UIMapType } } mapId -> { mapType = Enum.UIMapType.* }
+---@field ContinentMapOverrides { [MapId]: MapId } mapId -> continentMapId
 ---@field IsolatedAreas { [MapId]: number } mapId -> groupId (same groupId = same isolated area)
----@field IgnoredMaps { [MapId]: boolean } mapId -> whether the map should be ignored for pathfinding (no paths will go through it)
----@field IsolatedZones { [MapId]: boolean } mapId -> whether the map is an isolated zone (no paths will start or end in it, but paths may go through it if necessary)
+---@field IsolatedContinents { [MapId]: boolean } mapId -> whether the continent is isolated (all areas must match exactly)
 
 ---@class FarstriderLibDataAPI
 ---@field VERSION number the version of the API

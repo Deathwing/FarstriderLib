@@ -214,6 +214,13 @@ function Pathfinding:GetContinentMapRoot(uiMapID)
         mapInfo = C_Map.GetMapInfo(mapInfo.parentMapID)
     end
 
+    if mapInfo then
+        local continentMapOverride = FarstriderLib.Data.CONFIG.ContinentMapOverrides[mapInfo.mapID]
+        if continentMapOverride then
+            mapInfo = C_Map.GetMapInfo(continentMapOverride)
+        end
+    end
+
     self._continentCache[uiMapID] = mapInfo or false
     return mapInfo
 end
@@ -239,7 +246,8 @@ function Pathfinding:HasDirectFlyPath(loc1, loc2)
     end
 
     if continentInfoMap1.mapID == continentInfoMap2.mapID then
-        if continentInfoMap1.mapID == 2274 then
+        local isolatedContinents = FarstriderLib.Data.CONFIG.IsolatedContinents
+        if isolatedContinents[continentInfoMap1.mapID] then
             local subzone1 = self:GetMostTopLevelSubZoneAtPosition(uiMapID1, loc1.pos) or uiMapID1
             local subzone2 = self:GetMostTopLevelSubZoneAtPosition(uiMapID2, loc2.pos) or uiMapID2
             return subzone1 == subzone2

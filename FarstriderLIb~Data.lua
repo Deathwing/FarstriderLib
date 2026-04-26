@@ -22,9 +22,9 @@ local defaults = {
     CONFIG = {
         ElevationOverrides = {},
         MapTypeOverrides = {},
+        ContinentMapOverrides = {},
         IsolatedAreas = {},
-        IgnoredMaps = {},
-        IsolatedZones = {},
+        IsolatedContinents = {},
     },
     GetLocalizedString = function(locaId) return L["Waypoint_" .. locaId] or L["Unknown Location"] end,
     IsBindLocationSupported = function() return false end,

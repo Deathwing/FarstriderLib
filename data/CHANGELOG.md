@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.4.0
+
+### Added
+- Added isolated area groups for Eversong Woods, Ghostlands, Silvermoon City, Azuremyst Isle, The Exodar, Bloodmyst Isle, and Isle of Quel'Danas (covering both Pandaria+ and Cataclysm-era map IDs)
+- Added `IsolatedContinents` config: Khaz Algar (2274) is now flagged as an isolated continent, requiring subzone-level matching for direct fly-path checks instead of continent-level matching
+- Added `ContinentMapOverrides` config: Quel'Thalas (2537) is now remapped to Eastern Kingdoms for pathfinding
+- Added Quel'Thalas (2537) to `MapTypeOverrides` as Zone type
+- Added boat connection: Auberdine → Valaar's Berth (Azuremyst Isle) for TBC and later
+- Added Ruins of Lordaeron Orb of Translocation → Silvermoon City portal connection for Horde
+
+### Changes
+- `IsolatedAreas` group IDs are now auto-generated negative integers (via `_I()`/`_i()` helpers) so new groups never clash with hardcoded values
+- Renamed `IsolatedZones` to `IsolatedContinents`; existing entry for Dornogol and Undermine removed; Khaz Algar (2274) added
+- Removed `IgnoredMaps` (map 2311) in favor of isolated area and continent map override configs
+- Removed Player Housing maps from `MapTypeOverrides`; they are now handled via `IsolatedAreas`
+
 ## 1.3.0
 
 ### Changes

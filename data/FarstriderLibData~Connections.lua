@@ -75,6 +75,10 @@ if GetExpansionLevel() < 3 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
     if UnitFactionGroup("player") == "Alliance" then
         addBoat(0, { x = -3831, y = -611, z = 4 }, false, 150, 1, { x = 6448, y = 835, z = 5 }, false, 442, 600)                                  -- Menethil Harbor to Auberdine
         addBoat(1, { x = 6448, y = 835, z = 5 }, false, 442, 1, { x = 8177.5600585938, y = 1002.6599731445, z = 6.66929006577 }, false, 702, 600) -- Auberdine to Rut'theran Village
+
+        if GetExpansionLevel() >= 1 then
+            addBoat(1, { x = 6448, y = 835, z = 5 }, false, 442, 530, { x = -4284, y = -11194, z = 13 }, false, 3574, 600) -- Auberdine to Valaar's Berth (Azuremyst Isle)
+        end
     end
 end
 
@@ -230,6 +234,8 @@ if GetExpansionLevel() >= 1 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
 
     -- Horde
     if UnitFactionGroup("player") == "Horde" then
+        addPortal(false, 0, { x = 1949, y = -98, z = 41 }, false, 153, 110, { x = 0.56, y = 0.22, z = 0 }, true, 3487, 30)                                                         -- Ruins of Lordaeron Orb of Translocation to Silvermoon
+
         addPortal(false, 110, { x = 0.5870, y = 0.2052, z = 48 }, true, 3487, 17, { x = 0.5390, y = 0.4608, z = 0 }, true, 4, 10, function() return UnitLevel("player") >= 56 end) -- Silvermoon to Blasted Lands
 
         addPortal(false, 86, { x = 0.4648, y = 0.6689, z = 0 }, true, 1637, 17, { x = 0.5390, y = 0.4608, z = 0 }, true, 4, 10, function() return UnitLevel("player") >= 56 end)   -- Orgrimmar to Blasted Lands

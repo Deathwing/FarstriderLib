@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.3.0
+
+### Added
+- Added `ContinentMapOverrides` config: allows remapping a zone's detected continent root to a different continent for pathfinding purposes (e.g. Quel'Thalas → Eastern Kingdoms)
+
+### Changes
+- Replaced `IgnoredMaps` default config entry with `ContinentMapOverrides`
+- Replaced `IsolatedZones` default config entry with `IsolatedContinents`
+- `HasDirectFlyPath` now uses `IsolatedContinents` config instead of a hardcoded Khaz Algar map ID check
+
 ## 1.2.1
 
 ### Improvements
