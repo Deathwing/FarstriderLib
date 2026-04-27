@@ -63,7 +63,7 @@ Config.ContinentMapOverrides = {
 local isolatedAreasCounter = -1
 local function _i() return isolatedAreasCounter end
 local function _I()
-    isolatedAreasCounter = isolatedAreasCounter - 1
+    isolatedAreasCounter = isolatedAreasCounter + 1
     return isolatedAreasCounter
 end
 

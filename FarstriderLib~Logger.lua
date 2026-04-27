@@ -10,7 +10,9 @@ if not FarstriderLib.Internal then return end
 ---@field frame Frame?
 ---@field scrollFrame ScrollFrame?
 ---@field editBox EditBox?
----@field messageQueue { text: string, r: number, g: number, b: number }[]
+---@field messageQueue { text: string, r: number, g: number, b: number, msgType: string }[]
+---@field messageLog   { text: string, r: number, g: number, b: number, msgType: string, lineNum: number }[]
+---@field filters      { [string]: boolean }  Enabled state per message type
 ---@field linesPerFrame number  Max lines to flush per OnUpdate
 ---@field lineCount number      Running total of logged lines
 ---@field numberWidth number    Digit width for line-number padding
@@ -21,9 +23,26 @@ Logger.frame         = nil
 Logger.scrollFrame   = nil
 Logger.editBox       = nil
 Logger.messageQueue  = {}
+Logger.messageLog    = {}
 Logger.linesPerFrame = 50
 Logger.lineCount     = 0
 Logger.numberWidth   = 4
+Logger.filters       = {
+    Log       = true,
+    Info      = true,
+    InfoGreen = true,
+    Warning   = true,
+    Error     = true,
+}
+
+-- Per-type display config used for filter toggle buttons.
+local FILTER_DEFS = {
+    { key = "Log",       label = "LOG",  r = 1,   g = 1,   b = 1   },
+    { key = "Info",      label = "INFO", r = 0.2, g = 0.6, b = 1   },
+    { key = "InfoGreen", label = "SUCC", r = 0.2, g = 1,   b = 0.2 },
+    { key = "Warning",   label = "WARN", r = 1,   g = 0.6, b = 0   },
+    { key = "Error",     label = "ERR",  r = 1,   g = 0.2, b = 0.2 },
+}
 
 --- Convert 0-1 RGB floats to a 6-character hex string.
 ---@param r number
@@ -125,7 +144,30 @@ function Logger:CreateLogWindow()
         edit:SetText("")
         Logger.lineCount = 0
         Logger.messageQueue = {}
+        Logger.messageLog   = {}
     end)
+
+    -- Filter toggle buttons (one per message type, top-left of frame)
+    local function UpdateFilterBtn(btn, def)
+        if Logger.filters[def.key] then
+            btn:SetText(("  |cff%s%s|r  "):format(rgbToHex(def.r, def.g, def.b), def.label))
+        else
+            btn:SetText(("  |cff666666%s|r  "):format(def.label))
+        end
+    end
+
+    for i, def in ipairs(FILTER_DEFS) do
+        local btn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+        btn:SetSize(55, 20)
+        btn:SetPoint("TOPLEFT", f, "TOPLEFT", 10 + (i - 1) * 58, -10)
+        UpdateFilterBtn(btn, def)
+        local capturedDef = def
+        btn:SetScript("OnClick", function()
+            Logger.filters[capturedDef.key] = not Logger.filters[capturedDef.key]
+            UpdateFilterBtn(btn, capturedDef)
+            Logger:RebuildContent()
+        end)
+    end
 
     f:SetScript("OnUpdate", function() Logger:FlushQueue() end)
 
@@ -145,12 +187,13 @@ end
 
 --- Queue a colored line for display on the next OnUpdate.
 ---@param text string
----@param r number  Red   (0-1)
----@param g number  Green (0-1)
----@param b number  Blue  (0-1)
-function Logger:EnqueueLine(text, r, g, b)
+---@param r number    Red   (0-1)
+---@param g number    Green (0-1)
+---@param b number    Blue  (0-1)
+---@param msgType string  Type key: Log | Info | InfoGreen | Warning | Error
+function Logger:EnqueueLine(text, r, g, b, msgType)
     self:EnsureWindow()
-    table.insert(self.messageQueue, { text = text, r = r, g = g, b = b })
+    table.insert(self.messageQueue, { text = text, r = r, g = g, b = b, msgType = msgType })
 end
 
 --- Flush up to `linesPerFrame` queued messages into the edit box.
@@ -165,14 +208,39 @@ function Logger:FlushQueue()
         if not entry then break end
 
         self.lineCount = self.lineCount + 1
-        local fmt = string.format("%%%dd: %%s", self.numberWidth)
-        local numbered = string.format(fmt, self.lineCount, entry.text)
-        local hex = rgbToHex(entry.r, entry.g, entry.b)
-        local colored = ("|cff%s%s|r\n"):format(hex, numbered)
+        entry.lineNum  = self.lineCount
+        table.insert(self.messageLog, entry)
 
-        if edit then edit:SetText((edit:GetText() or "") .. colored) end
-        if scroll then scroll:SetVerticalScroll(scroll:GetVerticalScrollRange()) end
+        if self.filters[entry.msgType] then
+            local fmt     = string.format("%%%dd: %%s", self.numberWidth)
+            local numbered = string.format(fmt, self.lineCount, entry.text)
+            local hex     = rgbToHex(entry.r, entry.g, entry.b)
+            local colored = ("|cff%s%s|r\n"):format(hex, numbered)
+
+            if edit then edit:SetText((edit:GetText() or "") .. colored) end
+            if scroll then scroll:SetVerticalScroll(scroll:GetVerticalScrollRange()) end
+        end
     end
+end
+
+--- Rebuild the edit-box text from messageLog applying current filters.
+--- Called whenever a filter toggle changes.
+function Logger:RebuildContent()
+    self:EnsureWindow()
+    local edit, scroll = self.editBox, self.scrollFrame
+    if not edit then return end
+
+    local parts = {}
+    for _, entry in ipairs(self.messageLog) do
+        if self.filters[entry.msgType] then
+            local fmt      = string.format("%%%dd: %%s", self.numberWidth)
+            local numbered  = string.format(fmt, entry.lineNum, entry.text)
+            local hex      = rgbToHex(entry.r, entry.g, entry.b)
+            parts[#parts + 1] = ("|cff%s%s|r\n"):format(hex, numbered)
+        end
+    end
+    edit:SetText(table.concat(parts))
+    if scroll then scroll:SetVerticalScroll(scroll:GetVerticalScrollRange()) end
 end
 
 ---------------------------------------------------------------------------
@@ -180,19 +248,19 @@ end
 ---------------------------------------------------------------------------
 
 --- Log a white message.
-function Logger:Log(...) self:EnqueueLine(concatArgs(" ", ...), 1, 1, 1) end
+function Logger:Log(...)      self:EnqueueLine(concatArgs(" ", ...), 1,   1,   1,   "Log")       end
 
 --- Log a blue informational message.
-function Logger:Info(...) self:EnqueueLine(concatArgs(" ", ...), 0.2, 0.6, 1) end
+function Logger:Info(...)     self:EnqueueLine(concatArgs(" ", ...), 0.2, 0.6, 1,   "Info")      end
 
 --- Log a green informational message.
-function Logger:InfoGreen(...) self:EnqueueLine(concatArgs(" ", ...), 0.2, 1, 0.2) end
+function Logger:InfoGreen(...) self:EnqueueLine(concatArgs(" ", ...), 0.2, 1,   0.2, "InfoGreen") end
 
 --- Log an orange warning.
-function Logger:Warning(...) self:EnqueueLine(concatArgs(" ", ...), 1, 0.6, 0) end
+function Logger:Warning(...)  self:EnqueueLine(concatArgs(" ", ...), 1,   0.6, 0,   "Warning")   end
 
 --- Log a red error.
-function Logger:Error(...) self:EnqueueLine(concatArgs(" ", ...), 1, 0.2, 0.2) end
+function Logger:Error(...)    self:EnqueueLine(concatArgs(" ", ...), 1,   0.2, 0.2, "Error")     end
 
 -- Slash command to toggle
 SLASH_FARSTRIDERLOG1 = "/fslog"

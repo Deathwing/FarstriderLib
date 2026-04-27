@@ -447,9 +447,19 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
 
     -- Create virtual NavNodes for start and goal locations
     local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes, playerInWizardsSanctum)
-    if DevTool then                                    -- MRP_REMOVE_LINE
-        DevTool:AddData(startNavNode, "Start NavNode") -- MRP_REMOVE_LINE
-    end                                                -- MRP_REMOVE_LINE
+    if DevTool then                                       -- MRP_REMOVE_LINE
+        DevTool:AddData(startNavNode, "Start NavNode")    -- MRP_REMOVE_LINE
+        local nodesByLocaId = {}                          -- MRP_REMOVE_LINE
+        for _, navNode in pairs(self.allNodes) do         -- MRP_REMOVE_LINE
+            for _, edge in ipairs(navNode.edges) do       -- MRP_REMOVE_LINE
+                if edge.locaId and edge.locaId > 0 then   -- MRP_REMOVE_LINE
+                    nodesByLocaId[edge.locaId] = navNode  -- MRP_REMOVE_LINE
+                    break                                 -- MRP_REMOVE_LINE
+                end                                       -- MRP_REMOVE_LINE
+            end                                           -- MRP_REMOVE_LINE
+        end                                               -- MRP_REMOVE_LINE
+        DevTool:AddData(nodesByLocaId, "Nodes By LocaId") -- MRP_REMOVE_LINE
+    end                                                   -- MRP_REMOVE_LINE
 
     local dynamicFromNode = self.allNodes["dynamic:from"]
     if dynamicFromNode then

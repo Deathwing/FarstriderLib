@@ -2,6 +2,9 @@
 
 ## 1.4.0
 
+### Fixes
+- Resolved several issues around Quel'Thalas (Old) in Midnight
+
 ### Added
 - Added isolated area groups for Eversong Woods, Ghostlands, Silvermoon City, Azuremyst Isle, The Exodar, Bloodmyst Isle, and Isle of Quel'Danas (covering both Pandaria+ and Cataclysm-era map IDs)
 - Added `IsolatedContinents` config: Khaz Algar (2274) is now flagged as an isolated continent, requiring subzone-level matching for direct fly-path checks instead of continent-level matching

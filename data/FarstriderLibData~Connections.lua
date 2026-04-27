@@ -50,6 +50,17 @@ local function addFlightpath(fromMapId, fromPos, fromIsUI, fromAreaId, toMapId, 
     flightpathCount = flightpathCount + 1
 end
 
+-- TBC
+if GetExpansionLevel() >= 2 then
+    -- Both
+    addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 23, { x = 0.7556, y = 0.5412, z = 0 }, true, 139, 60)   -- Shattered Sun Staging Area ↔ Light's Hope Chapel, Eastern Plaguelands
+    addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 95, { x = 0.7403, y = 0.6803, z = 0 }, true, 15947, 30) -- Shattered Sun Staging Area ↔ Zul'Aman, Ghostlands
+    -- Horde
+    if UnitFactionGroup("player") == "Horde" then
+        addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 94, { x = 0.5467, y = 0.5061, z = 0 }, true, 3430, 30) -- Shattered Sun Staging Area ↔ Silvermoon City
+    end
+end
+
 -- Shadowlands
 if GetExpansionLevel() >= 8 then
     -- Both
