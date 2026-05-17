@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.1
+
+### Changes
+- Updated for TBC Phase 2
+
 ## 1.3.0
 
 ### Added
