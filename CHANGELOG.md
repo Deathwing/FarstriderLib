@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.3.3
+
+### Changes
+- Added support for Interface 120007
+
 ## 1.3.2
 
 ### Changes
