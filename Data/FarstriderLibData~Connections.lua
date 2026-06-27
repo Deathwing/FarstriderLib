@@ -734,7 +734,7 @@ if GetExpansionLevel() >= 6 then
     addItem(140192, 627, { x = 0.6092, y = 0.4472, z = 739 }, true, 7502, 30, function() return C_QuestLog.IsQuestFlaggedCompleted(44184) or C_QuestLog.IsQuestFlaggedCompleted(44663) end) -- Dalaran Hearthstone
     addItem(142469, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 30)                                                                                                                  -- Violet Seal of the Grand Magus
     addItem(138448, 627, { x = 0.50, y = 0.26, z = 0 }, true, 8270, 60)                                                                                                                     -- Emblem of Margoss
-    addItem(140324, 680, { x = 0.37, y = 0.59, z = 0 }, true, 7928, 15)                                                                                                                     -- Mobile Telemancy Beacon
+    addItem(140324, 680, { x = 0.37, y = 0.59, z = 0 }, true, 7928, 15, function() return C_Map.GetBestMapForUnit("player") == 680 end)                                                     -- Mobile Telemancy Beacon (Suramar only)
     addItem(151652, 885, { x = 0.50, y = 0.50, z = 0 }, true, 8899, 30)                                                                                                                     -- Wormhole Generator: Argus
     addItem(144341, 627, { x = 0.50, y = 0.50, z = 0 }, true, 7502, 30)                                                                                                                     -- Rechargeable Reaves Battery
     addItem(139590, 25, { x = 0.73, y = 0.24, z = 0 }, true, 3486, 480)                                                                                                                     -- Scroll of Teleport: Ravenholdt
@@ -922,6 +922,11 @@ if GetExpansionLevel() >= 11 then
     addItem(266370, 2537, { x = 0.50, y = 0.50, z = 0 }, true, 2037, 30)                                                                                                                            -- Dundun's Abundant Travel Method
     addItem(253629, 2393, { x = 0.50, y = 0.50, z = 0 }, true, 10473, 60)                                                                                                                           -- Personal Key to the Arcantina
     addPortal(true, 2393, { x = 0.4566, y = 0.6973, z = 0 }, true, 3487, 2541, { x = 0.5061, y = 0.8888, z = 0 }, true, 10473, 15, function() return C_QuestLog.IsQuestFlaggedCompleted(86903) end) -- Silvermoon City <-> Arcantina portal
+
+    -- Alliance
+    if UnitFactionGroup("player") == "Alliance" then
+        addPortal(true, 2393, { x = 0.5260, y = 0.6457, z = 0 }, true, 3487, 84, { x = 0.5450, y = 0.1726, z = 0 }, true, 1519, 15) -- Silvermoon City <-> Stormwind (portal room)
+    end
     -- Mage Teleport
     addSpell(1259190, 2393, { x = 0.50, y = 0.50, z = 0 }, true, 3487, 10)                                                                                                                          -- Teleport: Silvermoon City
 end

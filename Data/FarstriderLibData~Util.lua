@@ -105,12 +105,31 @@ function Util.CanUseSpell(spellId)
     return C_Spell.GetSpellCooldown(spellId).duration <= 0
 end
 
+--- Returns whether the player has a learned toy AND can actually use it.
+--- `PlayerHasToy` only reports ownership, not usability — engineering-gated toys
+--- (wormhole generators, dimensional rippers, etc.) report `PlayerHasToy = true`
+--- regardless of profession/specialization. `C_ToyBox.IsToyUsable` reflects the
+--- game's own requirement check (profession, specialization, skill level, class,
+--- faction), so we defer to it when available.
+---@param itemId number
+---@return boolean
+local function HasUsableToy(itemId)
+    if not PlayerHasToy(itemId) then return false end
+    if C_ToyBox and C_ToyBox.IsToyUsable then
+        local usable = C_ToyBox.IsToyUsable(itemId)
+        -- IsToyUsable returns nil while toy data is still loading; treat nil as
+        -- usable so a transient load state doesn't drop a valid travel option.
+        if usable == false then return false end
+    end
+    return true
+end
+
 --- Returns whether the player can currently use a given item.
 ---@param itemId number
 ---@return boolean
 function Util.CanUseItem(itemId)
     if not itemId then return false end
-    if not (PlayerHasToy(itemId) or (C_Item.GetItemCount(itemId) > 0 and C_Item.IsUsableItem(itemId))) then return false end
+    if not (HasUsableToy(itemId) or (C_Item.GetItemCount(itemId) > 0 and C_Item.IsUsableItem(itemId))) then return false end
 
     if C_Item.GetItemCooldown then
         if select(2, C_Item.GetItemCooldown(itemId)) <= 0 then return true end

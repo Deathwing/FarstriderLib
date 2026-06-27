@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.5.0
+
+### Added
+- Added a Silvermoon City portal connection to the Stormwind portal room for Alliance characters
+
+### Fixes
+- Item travel connections now defer to the game's own toy usability check (`C_ToyBox.IsToyUsable`), so engineering-gated toys (Wormhole Generators, Dimensional Rippers, Ultrasafe Transporters) are no longer suggested to characters lacking the required profession or specialization
+
+### Changes
+- Updated data sources
+
 ## 1.4.3
 
 ### Changes

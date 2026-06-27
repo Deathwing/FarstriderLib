@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.4.0
+
+### Added
+- Added a Silvermoon City portal connection to the Stormwind portal room for Alliance characters
+
+### Fixes
+- Item travel connections now defer to the game's own toy usability check (`C_ToyBox.IsToyUsable`), so engineering-gated toys (Wormhole Generators, Dimensional Rippers, Ultrasafe Transporters) are no longer suggested to characters lacking the required profession or specialization
+- The Mobile Telemancy Beacon item connection is now restricted to Suramar, where the item can actually be used, so it is no longer suggested elsewhere
+
+### Changes
+- Added 12.0.7 entries
+
 ## 1.3.3
 
 ### Changes
