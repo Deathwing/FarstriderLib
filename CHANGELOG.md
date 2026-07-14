@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.1
+
+### Fixes
+- Restored faction restrictions on travel connections: a 12.0.7 data format change (PlayerCondition `RaceMask` split into `RaceMasks_0/1`) silently dropped all faction gates from the generated waypoint graph, routing Alliance characters through Horde-only transports such as the Grom'gol/Undercity zeppelins (#1)
+- Horde-only portals whose faction requirement is only expressed via ModifierTree data (Ruins of Lordaeron and Tirisfal Glades portal networks) are now correctly gated as well (#1)
+
+### Changes
+- Added support for Interface 20506
+
 ## 1.4.0
 
 ### Added

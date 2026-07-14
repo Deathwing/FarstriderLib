@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.5.1
+
+### Fixes
+- Restored faction restrictions on waypoint connections that were silently dropped by a 12.0.7 data format change; Alliance characters are no longer routed through Horde-only transports (#1)
+
+### Changes
+- Added support for Interface 20506
+- Updated data sources
+
 ## 1.5.0
 
 ### Added
