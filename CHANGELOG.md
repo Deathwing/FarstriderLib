@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.2
+
+### Changes
+- Added support for Interface 11509 (Classic Era 1.15.9)
+
 ## 1.4.1
 
 ### Fixes

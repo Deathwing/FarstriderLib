@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.5.2
+
+### Fixes
+- Added the "Seat of Ramkahen" (Uldum) hearthstone bind location in all locales
+
+### Changes
+- Added support for Interface 11509
+
 ## 1.5.1
 
 ### Fixes
