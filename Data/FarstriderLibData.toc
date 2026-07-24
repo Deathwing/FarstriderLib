@@ -3,6 +3,9 @@
 ## Notes: Optional standalone data package for FarstriderLib, providing waypoint graphs, area data, and map overrides.
 ## IconTexture: Interface\AddOns\FarstriderLibData\Media\logo.png
 ## Author: Savi, Deathwing
+## X-Website: https://github.com/Deathwing/FarstriderLib
+## X-Repository: https://github.com/Deathwing/FarstriderLib
+## X-Curse-Project-ID: 1507197
 ## X-License: GNU GPL3
 ## X-Category: Library
 ## Category-enUS: Libraries
