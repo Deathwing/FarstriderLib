@@ -1,7 +1,7 @@
 <Ui xsi:schemaLocation="http://www.blizzard.com/wow/ui/ ..\..\FrameXML\UI.xsd">
 
     <!-- Bootstrap -->
-    <Script file="FarstriderLibData.d.lua" /> <!-- MRP_REMOVE_LINE -->
+    <Script file="FarstriderLibData.d.lua" /> <!-- REMOVE_LINE -->
     <Script file="FarstriderLibData~Init.lua" />
 
     <!-- Locales -->

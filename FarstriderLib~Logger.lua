@@ -1,6 +1,6 @@
 -- FarstriderLib~Logger.lua
 -- Scrollable in-game log window for debug builds.
--- Entire file is stripped by MRP_REMOVE_LINE in production.
+-- Entire file is stripped by REMOVE_LINE in production.
 -- Toggle with /fslog.
 -- local _, FarstriderLib = ...
 

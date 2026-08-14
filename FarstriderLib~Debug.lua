@@ -1,6 +1,6 @@
 -- FarstriderLib~Debug.lua
 -- Debug-only world-map pin rendering and interactive testing tools.
--- Entire file is stripped by MRP_REMOVE_LINE in production.
+-- Entire file is stripped by REMOVE_LINE in production.
 -- local _, FarstriderLib = ...
 
 if not FarstriderLib.Internal then return end

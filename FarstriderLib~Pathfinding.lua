@@ -447,19 +447,19 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
 
     -- Create virtual NavNodes for start and goal locations
     local startNavNode = self:CreateVirtualNavNode(startLocation, validTravelNodes, playerInWizardsSanctum)
-    if DevTool then                                       -- MRP_REMOVE_LINE
-        DevTool:AddData(startNavNode, "Start NavNode")    -- MRP_REMOVE_LINE
-        local nodesByLocaId = {}                          -- MRP_REMOVE_LINE
-        for _, navNode in pairs(self.allNodes) do         -- MRP_REMOVE_LINE
-            for _, edge in ipairs(navNode.edges) do       -- MRP_REMOVE_LINE
-                if edge.locaId and edge.locaId > 0 then   -- MRP_REMOVE_LINE
-                    nodesByLocaId[edge.locaId] = navNode  -- MRP_REMOVE_LINE
-                    break                                 -- MRP_REMOVE_LINE
-                end                                       -- MRP_REMOVE_LINE
-            end                                           -- MRP_REMOVE_LINE
-        end                                               -- MRP_REMOVE_LINE
-        DevTool:AddData(nodesByLocaId, "Nodes By LocaId") -- MRP_REMOVE_LINE
-    end                                                   -- MRP_REMOVE_LINE
+    if DevTool then                                       -- REMOVE_LINE
+        DevTool:AddData(startNavNode, "Start NavNode")    -- REMOVE_LINE
+        local nodesByLocaId = {}                          -- REMOVE_LINE
+        for _, navNode in pairs(self.allNodes) do         -- REMOVE_LINE
+            for _, edge in ipairs(navNode.edges) do       -- REMOVE_LINE
+                if edge.locaId and edge.locaId > 0 then   -- REMOVE_LINE
+                    nodesByLocaId[edge.locaId] = navNode  -- REMOVE_LINE
+                    break                                 -- REMOVE_LINE
+                end                                       -- REMOVE_LINE
+            end                                           -- REMOVE_LINE
+        end                                               -- REMOVE_LINE
+        DevTool:AddData(nodesByLocaId, "Nodes By LocaId") -- REMOVE_LINE
+    end                                                   -- REMOVE_LINE
 
     local dynamicFromNode = self.allNodes["dynamic:from"]
     if dynamicFromNode then
@@ -488,9 +488,9 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
     end
 
     local goalNavNode = self:CreateVirtualNavNode(goalLocation, validTravelNodes)
-    if DevTool then                                  -- MRP_REMOVE_LINE
-        DevTool:AddData(goalNavNode, "Goal NavNode") -- MRP_REMOVE_LINE
-    end                                              -- MRP_REMOVE_LINE
+    if DevTool then                                  -- REMOVE_LINE
+        DevTool:AddData(goalNavNode, "Goal NavNode") -- REMOVE_LINE
+    end                                              -- REMOVE_LINE
 
     local startLoc = startNavNode:getLocation()
     local goalLoc = goalNavNode:getLocation()
@@ -583,12 +583,12 @@ function Pathfinding:FindPathBetweenLocations2(startLocation, goalLocation)
         end
     end
 
-    if DevTool then                                                -- MRP_REMOVE_LINE
-        DevTool:AddData(heap, "Heap")                              -- MRP_REMOVE_LINE
-        DevTool:AddData(navCostTable, "Nav Cost Table")            -- MRP_REMOVE_LINE
-        DevTool:AddData(cameFromTable, "Came From Table")          -- MRP_REMOVE_LINE
-        DevTool:AddData(cameFromEdgeTable, "Came From Edge Table") -- MRP_REMOVE_LINE
-    end                                                            -- MRP_REMOVE_LINE
+    if DevTool then                                                -- REMOVE_LINE
+        DevTool:AddData(heap, "Heap")                              -- REMOVE_LINE
+        DevTool:AddData(navCostTable, "Nav Cost Table")            -- REMOVE_LINE
+        DevTool:AddData(cameFromTable, "Came From Table")          -- REMOVE_LINE
+        DevTool:AddData(cameFromEdgeTable, "Came From Edge Table") -- REMOVE_LINE
+    end                                                            -- REMOVE_LINE
 
     navCostTable[startNavNode.key] = 0
     heapPush(startNavNode)
@@ -799,20 +799,20 @@ function Pathfinding:PrintPath(optimizedPath, path, edges)
         return
     end
 
-    if TomTom then                                             -- MRP_REMOVE_LINE
-        TomTom.waydb:ResetProfile()                            -- MRP_REMOVE_LINE
-        TomTom:ReloadWaypoints()                               -- MRP_REMOVE_LINE
-    end                                                        -- MRP_REMOVE_LINE
+    if TomTom then                                             -- REMOVE_LINE
+        TomTom.waydb:ResetProfile()                            -- REMOVE_LINE
+        TomTom:ReloadWaypoints()                               -- REMOVE_LINE
+    end                                                        -- REMOVE_LINE
 
-    if DevTool then                                            -- MRP_REMOVE_LINE
-        DevTool:AddData(path, "Path Nodes")                    -- MRP_REMOVE_LINE
-        DevTool:AddData(edges, "Path Edges")                   -- MRP_REMOVE_LINE
-        DevTool:AddData(optimizedPath, "Optimized Path Edges") -- MRP_REMOVE_LINE
-    end                                                        -- MRP_REMOVE_LINE
+    if DevTool then                                            -- REMOVE_LINE
+        DevTool:AddData(path, "Path Nodes")                    -- REMOVE_LINE
+        DevTool:AddData(edges, "Path Edges")                   -- REMOVE_LINE
+        DevTool:AddData(optimizedPath, "Optimized Path Edges") -- REMOVE_LINE
+    end                                                        -- REMOVE_LINE
 
     local media = FarstriderLib.media_path
 
-    FarstriderLib.ClearFlares() -- MRP_REMOVE_LINE
+    FarstriderLib.ClearFlares() -- REMOVE_LINE
 
     for i, edge in ipairs(optimizedPath) do
         local loc = edge.loc or edge.checkpoint or edge.enter
