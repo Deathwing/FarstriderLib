@@ -147,6 +147,10 @@ Config.IsolatedAreas = {
     [2541] = _I(), -- Arcantina
 }
 
+if FarstriderLibData.IS_FOREVER then
+    Config.IsolatedAreas[2524] = _I() -- Darkspear Islands
+end
+
 -- Isolated continents: mapId -> boolean (true = continent is isolated, all areas must match exactly)
 Config.IsolatedContinents = {
     [2274] = true, -- Khaz Algar

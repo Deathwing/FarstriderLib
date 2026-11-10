@@ -3,6 +3,8 @@
 
 if not FarstriderLibData.Internal then return end
 
+local _fld = FarstriderLibData.Internal
+
 local L = FarstriderLibData.L
 
 ---@enum SpecialLocaId
@@ -51,18 +53,28 @@ local function addFlightpath(fromMapId, fromPos, fromIsUI, fromAreaId, toMapId, 
 end
 
 -- TBC
-if GetExpansionLevel() >= 2 then
-    -- Both
-    addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 23, { x = 0.7556, y = 0.5412, z = 0 }, true, 139, 60)   -- Shattered Sun Staging Area ↔ Light's Hope Chapel, Eastern Plaguelands
-    addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 95, { x = 0.7403, y = 0.6803, z = 0 }, true, 15947, 30) -- Shattered Sun Staging Area ↔ Zul'Aman, Ghostlands
-    -- Horde
-    if UnitFactionGroup("player") == "Horde" then
-        addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 94, { x = 0.5467, y = 0.5061, z = 0 }, true, 3430, 30) -- Shattered Sun Staging Area ↔ Silvermoon City
+if FarstriderLibData.EXPANSION_LEVEL >= 2 then
+    if FarstriderLibData.CLASSIC_UI_MAPS then
+        -- Both
+        addFlightpath(530, { x = 12994.1, y = -6884.4, z = 0 }, false, 4085, 0, { x = 2249.7, y = -5333.5, z = 0 }, false, 139, 60)    -- Shattered Sun Staging Area ↔ Light's Hope Chapel, Eastern Plaguelands
+        addFlightpath(530, { x = 12994.1, y = -6884.4, z = 0 }, false, 4085, 530, { x = 6770.0, y = -7726.3, z = 0 }, false, 15947, 30) -- Shattered Sun Staging Area ↔ Zul'Aman, Ghostlands
+        -- Horde
+        if UnitFactionGroup("player") == "Horde" then
+            addFlightpath(530, { x = 12994.1, y = -6884.4, z = 0 }, false, 4085, 530, { x = 9380.0, y = -7180.0, z = 0 }, false, 3430, 30) -- Shattered Sun Staging Area ↔ Silvermoon City
+        end
+    else
+        -- Both
+        addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 23, { x = 0.7556, y = 0.5412, z = 0 }, true, 139, 60)   -- Shattered Sun Staging Area ↔ Light's Hope Chapel, Eastern Plaguelands
+        addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 95, { x = 0.7403, y = 0.6803, z = 0 }, true, 15947, 30) -- Shattered Sun Staging Area ↔ Zul'Aman, Ghostlands
+        -- Horde
+        if UnitFactionGroup("player") == "Horde" then
+            addFlightpath(122, { x = 0.4756, y = 0.2590, z = 0 }, true, 4085, 94, { x = 0.5467, y = 0.5061, z = 0 }, true, 3430, 30) -- Shattered Sun Staging Area ↔ Silvermoon City
+        end
     end
 end
 
 -- Shadowlands
-if GetExpansionLevel() >= 8 then
+if FarstriderLibData.EXPANSION_LEVEL >= 8 then
     -- Both
     addFlightpath(2222, { x = -1902.4399414062, y = 1214.7600097656, z = 5450.8701171875 }, false, 10565, 2222, { x = -3387.6999511719, y = 5461.4599609375, z = 4275.7202148438 }, false, 10982, 10) -- Oribos to Pridefall Hamlet, Revendreth
     addFlightpath(2222, { x = -1902.4399414062, y = 1214.7600097656, z = 5450.8701171875 }, false, 10565, 2222, { x = -6143.7797851562, y = -207.12800598145, z = 5581.919921875 }, false, 11515, 10) -- Oribos to Tirna Vaal, Ardenweald
@@ -81,20 +93,20 @@ local function addBoat(fromMapId, fromPos, fromIsUI, fromAreaId, toMapId, toPos,
 end
 
 -- Pre-Cataclysm boats (Classic Only - routes removed in the Shattering)
-if GetExpansionLevel() < 3 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+if FarstriderLibData.EXPANSION_LEVEL < 3 and FarstriderLibData.CLASSIC_WORLD then
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
         addBoat(0, { x = -3831, y = -611, z = 4 }, false, 150, 1, { x = 6448, y = 835, z = 5 }, false, 442, 600)                                  -- Menethil Harbor to Auberdine
         addBoat(1, { x = 6448, y = 835, z = 5 }, false, 442, 1, { x = 8177.5600585938, y = 1002.6599731445, z = 6.66929006577 }, false, 702, 600) -- Auberdine to Rut'theran Village
 
-        if GetExpansionLevel() >= 1 then
+        if FarstriderLibData.EXPANSION_LEVEL >= 1 then
             addBoat(1, { x = 6448, y = 835, z = 5 }, false, 442, 530, { x = -4284, y = -11194, z = 13 }, false, 3574, 600) -- Auberdine to Valaar's Berth (Azuremyst Isle)
         end
     end
 end
 
 -- Cataclysm+ boats (Classic Only - added in the Shattering)
-if GetExpansionLevel() >= 3 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+if FarstriderLibData.EXPANSION_LEVEL >= 3 and FarstriderLibData.CLASSIC_WORLD then
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
         addBoat(0, { x = -8645.5400390625, y = 1308.25, z = 5.23483991623 }, false, 1519, 1, { x = 8177.5600585938, y = 1002.6599731445, z = 6.66929006577 }, false, 702, 600) -- Stormwind to Rut'theran Village
@@ -111,47 +123,81 @@ local function addZeppelin(fromMapId, fromPos, fromIsUI, fromAreaId, toMapId, to
 end
 
 -- Undercity zeppelins (Classic Only - UC destroyed on retail in BfA)
-if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+if FarstriderLibData.CLASSIC_WORLD then
     -- Horde
     if UnitFactionGroup("player") == "Horde" then
         addZeppelin(0, { x = 2070.5122070312, y = 289.15798950195, z = 97.03157806396 }, false, 1497, 1, { x = 1842.1899414062, y = -4389.0400390625, z = 135.23300170898 }, false, 1637, 600)     --  Undercity to Orgrimmar
         addZeppelin(0, { x = 2059.9340820312, y = 235.90972900391, z = 99.76524353027 }, false, 1497, 0, { x = -12396.400390625, y = 217.47999572754, z = 1.69035005569 }, false, 117, 600)        --  Undercity to Grom'gol Base Camp
-        if GetExpansionLevel() >= 2 then
+        if FarstriderLibData.EXPANSION_LEVEL >= 2 then
             addZeppelin(0, { x = 2063.2448730469, y = 364.23959350586, z = 82.50442504883 }, false, 1497, 571, { x = 1950.8000488281, y = -6174.2299804688, z = 24.30380058289 }, false, 495, 600) --  Undercity to Howling Fjord
         end
     end
 end
 
+if FarstriderLibData.IS_FOREVER then
+    -- Both
+    addBoat(0, { x = -8232.298828125, y = -5800.7880859375, z = 0 }, false, 16727, 1, { x = -6932.6005859375, y = -4950.7778320312, z = 0 }, false, 977, 600)                                               -- Powderfuse Port to Steamwheedle Port
+    -- Alliance (High Order skycutter)
+    if UnitFactionGroup("player") == "Alliance" then
+        addZeppelin(0, { x = 544.80035400391, y = 424.21008300781, z = 107.04234313965 }, false, 17707, 2991, { x = 1848.2847900391, y = 569.14929199219, z = 642.68298339844 }, false, 16593, 600)      -- Old Dalaran Ruins to Zephras Isle
+    end
+    -- Horde (Windshapers skycutter)
+    if UnitFactionGroup("player") == "Horde" then
+        addZeppelin(1, { x = -802.02954101563, y = 366.52258300781, z = 187.95600891113 }, false, 215, 2991, { x = 1952.5416259766, y = 1019.132019043, z = 659.87805175781 }, false, 16593, 600)        -- Mulgore to Zephras Isle
+    end
+end
+
 -- Pre-Cataclysm Classic shared routes (zones unchanged between pre-Cata and Cata+)
-if GetExpansionLevel() < 3 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+if FarstriderLibData.EXPANSION_LEVEL < 3 and FarstriderLibData.CLASSIC_WORLD then
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
-        addBoat(56, { x = 0.0637, y = 0.6224, z = 0 }, true, 150, 70, { x = 0.7151, y = 0.5634, z = 0 }, true, 513, 600)        -- Menethil Harbor to Theramore
-        if GetExpansionLevel() >= 2 then
-            addBoat(56, { x = 0.0510, y = 0.5572, z = 0 }, true, 150, 117, { x = 0.6133, y = 0.6260, z = 0 }, true, 3981, 600)  -- Menethil Harbor to Valgarde
-            addBoat(84, { x = 0.1802, y = 0.2584, z = 0 }, true, 1519, 114, { x = 0.5968, y = 0.6941, z = 0 }, true, 3537, 177) -- Stormwind to Borean Tundra
+        addBoat(0, { x = -3863.4, y = -653.0, z = 0 }, false, 150, 1, { x = -4005.2, y = -4729.3, z = 0 }, false, 513, 600)      -- Menethil Harbor to Theramore
+        if FarstriderLibData.EXPANSION_LEVEL >= 2 then
+            addBoat(0, { x = -3683.7, y = -600.5, z = 0 }, false, 150, 571, { x = 593.1, y = -5105.8, z = 0 }, false, 3981, 600) -- Menethil Harbor to Valgarde
+            addBoat(0, { x = -8295.1, y = 1409.8, z = 0 }, false, 1519, 571, { x = 2230.0, y = 5130.5, z = 0 }, false, 3537, 177) -- Stormwind to Borean Tundra
         end
     end
     -- Turtle boats (WotLK+)
-    if GetExpansionLevel() >= 2 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 2 then
         addBoat(114, { x = 0.7892, y = 0.5365, z = 0 }, true, 4113, 115, { x = 0.4794, y = 0.7876, z = 0 }, true, 4152, 600) -- Unu'pe to Moa'ki Harbor
         addBoat(115, { x = 0.4964, y = 0.7843, z = 0 }, true, 4152, 117, { x = 0.2346, y = 0.5775, z = 0 }, true, 3988, 600) -- Moa'ki Harbor to Kamagua
     end
 end
 
--- Retail and Cata+ Classic boats and zeppelins (same zone maps)
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE or GetExpansionLevel() >= 3 then
+-- Cataclysm+ boats and zeppelins (retail and Cata+ Classic)
+if FarstriderLibData.CLASSIC_UI_MAPS and FarstriderLibData.EXPANSION_LEVEL >= 3 then
+    -- Neutral
+    addBoat(0, { x = -14279.9, y = 568.7, z = 0 }, false, 35, 1, { x = -996.7, y = -3829.2, z = 0 }, false, 392, 600) -- Booty Bay to Ratchet
+
+    -- Alliance
+    if UnitFactionGroup("player") == "Alliance" then
+        addBoat(0, { x = -3863.4, y = -653.0, z = 0 }, false, 150, 1, { x = -4005.2, y = -4729.3, z = 0 }, false, 513, 600)  -- Menethil Harbor to Theramore
+        addBoat(0, { x = -3683.7, y = -600.5, z = 0 }, false, 150, 571, { x = 593.1, y = -5105.8, z = 0 }, false, 3981, 600) -- Menethil Harbor to Valgarde
+        addBoat(0, { x = -8295.1, y = 1409.8, z = 0 }, false, 1519, 571, { x = 2230.0, y = 5130.5, z = 0 }, false, 3537, 177) -- Stormwind to Borean Tundra
+    end
+
+    -- Horde
+    if UnitFactionGroup("player") == "Horde" then
+        addZeppelin(1, { x = 1733.1, y = -4254.3, z = 0 }, false, 1637, 1, { x = -1028.8, y = 357.2, z = 0 }, false, 1638, 600)   -- Orgrimmar to Thunder Bluff
+        addZeppelin(1, { x = 1870.3, y = -4419.9, z = 0 }, false, 1637, 0, { x = -12451.4, y = 219.8, z = 0 }, false, 117, 600)   -- Orgrimmar to Grom'gol Base Camp
+        addZeppelin(1, { x = 1764.2, y = -4284.7, z = 0 }, false, 1637, 571, { x = 2837.3, y = 6185.4, z = 0 }, false, 3537, 600) -- Orgrimmar to Borean Tundra
+    end
+
+    -- Turtle boats
+    addBoat(114, { x = 0.7892, y = 0.5365, z = 0 }, true, 4113, 115, { x = 0.4794, y = 0.7876, z = 0 }, true, 4152, 600) -- Unu'pe to Moa'ki Harbor
+    addBoat(115, { x = 0.4964, y = 0.7843, z = 0 }, true, 4152, 117, { x = 0.2346, y = 0.5775, z = 0 }, true, 3988, 600) -- Moa'ki Harbor to Kamagua
+elseif not FarstriderLibData.CLASSIC_WORLD or FarstriderLibData.EXPANSION_LEVEL >= 3 then
     -- Neutral
     addBoat(210, { x = 0.3902, y = 0.6701, z = 0 }, true, 35, 10, { x = 0.7016, y = 0.7327, z = 0 }, true, 392, 600) -- Booty Bay to Ratchet
 
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
         addBoat(56, { x = 0.0637, y = 0.6224, z = 0 }, true, 150, 70, { x = 0.7151, y = 0.5634, z = 0 }, true, 513, 600)        -- Menethil Harbor to Theramore
-        if GetExpansionLevel() >= 2 then
+        if FarstriderLibData.EXPANSION_LEVEL >= 2 then
             addBoat(56, { x = 0.0510, y = 0.5572, z = 0 }, true, 150, 117, { x = 0.6133, y = 0.6260, z = 0 }, true, 3981, 600)  -- Menethil Harbor to Valgarde
             addBoat(84, { x = 0.1802, y = 0.2584, z = 0 }, true, 1519, 114, { x = 0.5968, y = 0.6941, z = 0 }, true, 3537, 177) -- Stormwind to Borean Tundra
         end
-        if GetExpansionLevel() >= 9 then
+        if FarstriderLibData.EXPANSION_LEVEL >= 9 then
             addBoat(84, { x = 0.2251, y = 0.5618, z = 0 }, true, 1519, 2022, { x = 0.8216, y = 0.3076, z = 0 }, true, 13644, 150) -- Stormwind to The Waking Shores
         end
     end
@@ -160,19 +206,19 @@ if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE or GetExpansionLevel() >= 3 then
     if UnitFactionGroup("player") == "Horde" then
         addZeppelin(85, { x = 0.4300, y = 0.6499, z = 0 }, true, 1637, 88, { x = 0.1528, y = 0.2570, z = 0 }, true, 1638, 600)      -- Orgrimmar to Thunder Bluff
         addZeppelin(85, { x = 0.5252, y = 0.5315, z = 0 }, true, 1637, 50, { x = 0.3717, y = 0.5249, z = 0 }, true, 117, 600)       -- Orgrimmar to Grom'gol Base Camp
-        if GetExpansionLevel() >= 2 then
+        if FarstriderLibData.EXPANSION_LEVEL >= 2 then
             addZeppelin(85, { x = 0.4475, y = 0.6230, z = 0 }, true, 1637, 114, { x = 0.4138, y = 0.5361, z = 0 }, true, 3537, 600) -- Orgrimmar to Borean Tundra
         end
-        if GetExpansionLevel() >= 7 then
+        if FarstriderLibData.EXPANSION_LEVEL >= 7 then
             addZeppelin(463, { x = 0.7093, y = 0.3823, z = 0 }, true, 368, 862, { x = 0.5803, y = 0.6505, z = 0 }, true, 8499, 600) -- Echo Isles to Zuldazar
         end
-        if GetExpansionLevel() >= 9 then
+        if FarstriderLibData.EXPANSION_LEVEL >= 9 then
             addZeppelin(1, { x = 0.5598, y = 0.1322, z = 0 }, true, 14, 2022, { x = 0.8165, y = 0.2796, z = 0 }, true, 13644, 150) -- Durotar to The Waking Shores
         end
     end
 
     -- Turtle boats (WotLK+)
-    if GetExpansionLevel() >= 2 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 2 then
         addBoat(114, { x = 0.7892, y = 0.5365, z = 0 }, true, 4113, 115, { x = 0.4794, y = 0.7876, z = 0 }, true, 4152, 600) -- Unu'pe to Moa'ki Harbor
         addBoat(115, { x = 0.4964, y = 0.7843, z = 0 }, true, 4152, 117, { x = 0.2346, y = 0.5775, z = 0 }, true, 3988, 600) -- Moa'ki Harbor to Kamagua
     end
@@ -188,13 +234,17 @@ local function addPortal(bidirectional, fromMapId, fromPos, fromIsUI, fromAreaId
 end
 
 -- Wrath of the Lich King
-if GetExpansionLevel() >= 2 then
+if FarstriderLibData.EXPANSION_LEVEL >= 2 then
     -- Both
-    addPortal(true, 119, { x = 0.4035, y = 0.8309, z = 0 }, true, 4300, 78, { x = 0.5055, y = 0.0773, z = 0 }, true, 4381, 10, function() return C_QuestLog.IsQuestFlaggedCompleted(12546) end) -- Sholazar Basin to Un'Goro Crater
+    if FarstriderLibData.CLASSIC_UI_MAPS then
+        addPortal(true, 571, { x = 4874.4, y = 5171.4, z = 0 }, false, 4300, 1, { x = -6157.3, y = -1337.0, z = 0 }, false, 4381, 10, function() return C_QuestLog.IsQuestFlaggedCompleted(12546) end) -- Sholazar Basin to Un'Goro Crater
+    else
+        addPortal(true, 119, { x = 0.4035, y = 0.8309, z = 0 }, true, 4300, 78, { x = 0.5055, y = 0.0773, z = 0 }, true, 4381, 10, function() return C_QuestLog.IsQuestFlaggedCompleted(12546) end)     -- Sholazar Basin to Un'Goro Crater
+    end
 end
 
 -- Pandaria (Retail Only)
-if GetExpansionLevel() >= 4 and WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+if FarstriderLibData.EXPANSION_LEVEL >= 4 and not FarstriderLibData.CLASSIC_WORLD then
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
         addPortal(true, 388, { x = 0.4975, y = 0.6866, z = 0 }, true, 5842, 504, { x = 0.6470, y = 0.7348, z = 0 }, true, 6507, 10) -- Townlong Steppes to Isle of Thunder
@@ -207,9 +257,23 @@ if GetExpansionLevel() >= 4 and WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
 end
 
 -- TBC+ city portals (Classic Only - different positions than retail portal rooms)
-if GetExpansionLevel() >= 1 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+if FarstriderLibData.EXPANSION_LEVEL >= 1 and FarstriderLibData.CLASSIC_WORLD then
     -- Dalaran to Caverns of Time (Wrath+)
-    if GetExpansionLevel() >= 2 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 2 and FarstriderLibData.CLASSIC_UI_MAPS then
+        addPortal(true, 571, { x = 5781.4, y = 841.4, z = 661 }, false, 4613, 1, { x = -8164.8, y = -4768.4, z = 0 }, false, 2300, 10) -- Dalaran to Caverns of Time
+
+        -- Silver Enclave / Sunreaver's Sanctuary portals to capitals
+        if UnitFactionGroup("player") == "Alliance" then
+            addPortal(false, 571, { x = 5718.9501953125, y = 719.59997558594, z = 641.72698974609 }, false, 4613, 0, { x = -4606.2, y = -927.1, z = 0 }, false, 1537, 10)      -- Silver Enclave to Ironforge
+            addPortal(false, 571, { x = 5718.9501953125, y = 719.59997558594, z = 641.72698974609 }, false, 4613, 1, { x = 9663.5, y = 2510.1, z = 0 }, false, 1657, 10)       -- Silver Enclave to Darnassus
+            addPortal(false, 571, { x = 5718.9501953125, y = 719.59997558594, z = 641.72698974609 }, false, 4613, 530, { x = -3933.8, y = -11341.1, z = 0 }, false, 3557, 10)  -- Silver Enclave to Exodar
+        end
+        if UnitFactionGroup("player") == "Horde" then
+            addPortal(false, 571, { x = 5925.7900390625, y = 593.60400390625, z = 640.59301757813 }, false, 4613, 0, { x = 1769.1, y = 57.7, z = 0 }, false, 1497, 10)        -- Sunreaver's Sanctuary to Undercity
+            addPortal(false, 571, { x = 5925.7900390625, y = 593.60400390625, z = 640.59301757813 }, false, 4613, 1, { x = -982.2, y = 287.0, z = 0 }, false, 1638, 10)       -- Sunreaver's Sanctuary to Thunder Bluff
+            addPortal(false, 571, { x = 5925.7900390625, y = 593.60400390625, z = 640.59301757813 }, false, 4613, 530, { x = 9976.2, y = -7079.2, z = 0 }, false, 3487, 10)   -- Sunreaver's Sanctuary to Silvermoon
+        end
+    elseif FarstriderLibData.EXPANSION_LEVEL >= 2 then
         addPortal(true, 125, { x = 0.2543, y = 0.5155, z = 661 }, true, 4613, 74, { x = 0.5460, y = 0.2830, z = 0 }, true, 2300, 10) -- Dalaran to Caverns of Time
 
         -- Silver Enclave / Sunreaver's Sanctuary portals to capitals
@@ -226,7 +290,22 @@ if GetExpansionLevel() >= 1 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
     end
 
     -- Alliance
-    if UnitFactionGroup("player") == "Alliance" then
+    if UnitFactionGroup("player") == "Alliance" and FarstriderLibData.CLASSIC_UI_MAPS then
+        addPortal(false, 530, { x = -4047.7, y = -11569.1, z = -138 }, false, 3557, 1, { x = 9656.5, y = 2518.2, z = 0 }, false, 1657, 10)                                                    -- Exodar to Darnassus
+        addPortal(false, 530, { x = -4053.8, y = -11575.2, z = -138 }, false, 3557, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end) -- Exodar to Blasted Lands
+
+        addPortal(false, 0, { x = -9007.8, y = 872.1, z = 100 }, false, 1519, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end)      -- Stormwind to Blasted Lands
+
+        addPortal(false, 0, { x = -4606.6, y = -929.1, z = 501 }, false, 1537, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end)     -- Ironforge to Blasted Lands
+
+        addPortal(false, 1, { x = 9662.0, y = 2510.2, z = 0 }, false, 1657, 530, { x = -3931.0, y = -11344.0, z = -138 }, false, 3557, 10)                                                   -- Darnassus to Exodar
+        addPortal(false, 1, { x = 9656.3, y = 2506.7, z = 0 }, false, 1657, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end)        -- Darnassus to Blasted Lands
+
+        -- Shattrath portals to capitals
+        addPortal(false, 530, { x = -1894.2399902344, y = 5387.8500976562, z = -12.42669963837 }, false, 3703, 0, { x = -4606.2, y = -927.1, z = 0 }, false, 1537, 10)      -- Shattrath to Ironforge
+        addPortal(false, 530, { x = -1894.2399902344, y = 5387.8500976562, z = -12.42669963837 }, false, 3703, 1, { x = 9663.5, y = 2510.1, z = 0 }, false, 1657, 10)       -- Shattrath to Darnassus
+        addPortal(false, 530, { x = -1894.2399902344, y = 5387.8500976562, z = -12.42669963837 }, false, 3703, 530, { x = -3933.8, y = -11341.1, z = 0 }, false, 3557, 10)  -- Shattrath to Exodar
+    elseif UnitFactionGroup("player") == "Alliance" then
         addPortal(false, 103, { x = 0.4757, y = 0.6216, z = -138 }, true, 3557, 89, { x = 0.4347, y = 0.7868, z = 0 }, true, 1657, 10)                                               -- Exodar to Darnassus
         addPortal(false, 103, { x = 0.4815, y = 0.6302, z = -138 }, true, 3557, 17, { x = 0.5390, y = 0.4608, z = 0 }, true, 4, 10, function() return UnitLevel("player") >= 56 end) -- Exodar to Blasted Lands
 
@@ -244,7 +323,26 @@ if GetExpansionLevel() >= 1 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
     end
 
     -- Horde
-    if UnitFactionGroup("player") == "Horde" then
+    if UnitFactionGroup("player") == "Horde" and FarstriderLibData.CLASSIC_UI_MAPS then
+        addPortal(false, 0, { x = 1949, y = -98, z = 41 }, false, 153, 530, { x = 9976.2, y = -7079.2, z = 0 }, false, 3487, 30)                                                       -- Ruins of Lordaeron Orb of Translocation to Silvermoon
+
+        addPortal(false, 530, { x = 9988.2, y = -7111.9, z = 48 }, false, 3487, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end) -- Silvermoon to Blasted Lands
+
+        if FarstriderLibData.EXPANSION_LEVEL < 3 then
+            addPortal(false, 1, { x = 1473.2, y = -4223.4, z = 0 }, false, 1637, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end) -- Orgrimmar (Valley of Spirits) to Blasted Lands
+        else
+            addPortal(false, 1, { x = 1770.8, y = -4332.3, z = 0 }, false, 1637, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end) -- Orgrimmar (Cleft of Shadow) to Blasted Lands
+        end
+
+        addPortal(false, 1, { x = -944.6, y = 276.9, z = 111 }, false, 1638, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end)   -- Thunder Bluff to Blasted Lands
+
+        addPortal(false, 0, { x = 1767.4, y = 55.1, z = 0 }, false, 1497, 0, { x = -11708.4, y = -3167.8, z = 0 }, false, 4, 10, function() return UnitLevel("player") >= 56 end)      -- Undercity to Blasted Lands
+
+        -- Shattrath portals to capitals
+        addPortal(false, 530, { x = -1899.6800537109, y = 5392.7299804688, z = -12.42640018463 }, false, 3703, 0, { x = 1769.1, y = 57.7, z = 0 }, false, 1497, 10)        -- Shattrath to Undercity
+        addPortal(false, 530, { x = -1899.6800537109, y = 5392.7299804688, z = -12.42640018463 }, false, 3703, 1, { x = -982.2, y = 287.0, z = 0 }, false, 1638, 10)       -- Shattrath to Thunder Bluff
+        addPortal(false, 530, { x = -1899.6800537109, y = 5392.7299804688, z = -12.42640018463 }, false, 3703, 530, { x = 9976.2, y = -7079.2, z = 0 }, false, 3487, 10)   -- Shattrath to Silvermoon
+    elseif UnitFactionGroup("player") == "Horde" then
         addPortal(false, 0, { x = 1949, y = -98, z = 41 }, false, 153, 110, { x = 0.56, y = 0.22, z = 0 }, true, 3487, 30)                                                         -- Ruins of Lordaeron Orb of Translocation to Silvermoon
 
         addPortal(false, 110, { x = 0.5870, y = 0.2052, z = 48 }, true, 3487, 17, { x = 0.5390, y = 0.4608, z = 0 }, true, 4, 10, function() return UnitLevel("player") >= 56 end) -- Silvermoon to Blasted Lands
@@ -263,7 +361,7 @@ if GetExpansionLevel() >= 1 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
 end
 
 -- Pandaria (Classic Only)
-if GetExpansionLevel() >= 4 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+if FarstriderLibData.EXPANSION_LEVEL >= 4 and FarstriderLibData.CLASSIC_WORLD then
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
         addPortal(false, 84, { x = 0.6871, y = 0.1717, z = 117 }, true, 1519, 371, { x = 0.4624, y = 0.8517, z = 63 }, true, 6516, 10, function() return C_QuestLog.IsQuestFlaggedCompleted(29548) end) -- Stormwind to Paw'don Village
@@ -289,7 +387,7 @@ if GetExpansionLevel() >= 4 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
     end
 end
 
-if GetExpansionLevel() >= 6 then
+if FarstriderLibData.EXPANSION_LEVEL >= 6 then
     -- Both
     addPortal(false, 627, { x = 0.7427, y = 0.4930, z = 739 }, true, 7505, 1669, { x = 500.28100585938, y = 1469.6800537109, z = 742.44201660156 }, false, 8714, 10) -- Dalaran to Argus
 end
@@ -357,7 +455,11 @@ local function addHearthstone(itemId)
 end
 
 -- Deeprun Tram (Stormwind <-> Ironforge)
-addPortal(true, 84, { x = 0.6962, y = 0.3111, z = 0 }, true, 1519, 87, { x = 0.7693, y = 0.5125, z = 0 }, true, 1537, 30) -- Stormwind to Ironforge via Deeprun Tram
+if FarstriderLibData.CLASSIC_UI_MAPS then
+    addPortal(true, 0, { x = -8356.2, y = 513.3, z = 0 }, false, 1519, 0, { x = -4839.6, y = -1321.8, z = 0 }, false, 1537, 30) -- Stormwind to Ironforge via Deeprun Tram
+else
+    addPortal(true, 84, { x = 0.6962, y = 0.3111, z = 0 }, true, 1519, 87, { x = 0.7693, y = 0.5125, z = 0 }, true, 1537, 30)  -- Stormwind to Ironforge via Deeprun Tram
+end
 
 -- Allied Race Portals
 -- Void Elf portals (Alliance, quest 79010)
@@ -409,14 +511,25 @@ end
 -- Vanilla
 -- Both
 addHearthstone(6948)                                                  -- Hearthstone
-addItem(18984, 83, { x = 0.5985, y = 0.4976, z = 0 }, true, 2255, 60) -- Dimensional Ripper - Everlook
-addItem(18986, 71, { x = 0.5151, y = 0.3025, z = 0 }, true, 976, 60)  -- Ultrasafe Transporter: Gadgetzan
-addItem(22631, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian
-addItem(22589, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian (Warlock)
-addItem(22630, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian (Priest)
-addItem(22632, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian (Druid)
--- Druid Teleport
-addSpell(18960, 80, { x = 0.44, y = 0.46, z = 0 }, true, 493, 10)     -- Teleport: Moonglade
+if FarstriderLibData.CLASSIC_UI_MAPS then
+    addItem(18984, 1, { x = 6753.6, y = -4672.4, z = 0 }, false, 2255, 60) -- Dimensional Ripper - Everlook
+    addItem(18986, 1, { x = -7225.4, y = -3777.7, z = 0 }, false, 976, 60) -- Ultrasafe Transporter: Gadgetzan
+    addItem(22631, 0, { x = -11122.0, y = -2017.1, z = 0 }, false, 2562, 5) -- Atiesh, Greatstaff of the Guardian
+    addItem(22589, 0, { x = -11122.0, y = -2017.1, z = 0 }, false, 2562, 5) -- Atiesh, Greatstaff of the Guardian (Warlock)
+    addItem(22630, 0, { x = -11122.0, y = -2017.1, z = 0 }, false, 2562, 5) -- Atiesh, Greatstaff of the Guardian (Priest)
+    addItem(22632, 0, { x = -11122.0, y = -2017.1, z = 0 }, false, 2562, 5) -- Atiesh, Greatstaff of the Guardian (Druid)
+    -- Druid Teleport
+    addSpell(18960, 1, { x = 7783.5, y = -2396.9, z = 0 }, false, 493, 10)  -- Teleport: Moonglade
+else
+    addItem(18984, 83, { x = 0.5985, y = 0.4976, z = 0 }, true, 2255, 60) -- Dimensional Ripper - Everlook
+    addItem(18986, 71, { x = 0.5151, y = 0.3025, z = 0 }, true, 976, 60)  -- Ultrasafe Transporter: Gadgetzan
+    addItem(22631, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian
+    addItem(22589, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian (Warlock)
+    addItem(22630, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian (Priest)
+    addItem(22632, 42, { x = 0.4735, y = 0.7532, z = 0 }, true, 2562, 5)  -- Atiesh, Greatstaff of the Guardian (Druid)
+    -- Druid Teleport
+    addSpell(18960, 80, { x = 0.44, y = 0.46, z = 0 }, true, 493, 10)     -- Teleport: Moonglade
+end
 -- Shaman: Astral Recall (teleports to hearthstone bind location)
 do
     local from = { actionOptions = { { type = "spell", data = 556 } }, condition = function() return FarstriderLibData.Util.CanUseSpell(556) and FarstriderLibData.AreaL[GetBindLocation()] end, unknown1 = 0, dynLoc = function() return FarstriderLibData.Util.GetPlayerLocation() end, flags = 8, type = 1, important = true, locaId = SpecialLocaId.SpellTo, locaArgs = function() return { FarstriderLibData.Util.GetSpellNameSafe(556), GetBindLocation() or L["Unknown Location"] } end }
@@ -424,21 +537,32 @@ do
     addEntry(SpecialLocaId.SpellTo + spellCount, from, to, false, 10)
     spellCount = spellCount + 1
 end
-addItem(21711, 80, { x = 0.44, y = 0.46, z = 0 }, true, 493, 60)      -- Lunar Festival Invitation
--- Mage Teleports
-addSpell(3561, 84, { x = 0.49, y = 0.87, z = 0 }, true, 1519, 10)     -- Teleport: Stormwind
-addSpell(3562, 87, { x = 0.27, y = 0.07, z = 0 }, true, 1537, 10)     -- Teleport: Ironforge
-addSpell(3565, 89, { x = 0.44, y = 0.78, z = 0 }, true, 1657, 10)     -- Teleport: Darnassus
-addSpell(3563, 998, { x = 0.85, y = 0.17, z = 0 }, true, 1497, 10)    -- Teleport: Undercity
-addSpell(3566, 88, { x = 0.22, y = 0.19, z = 0 }, true, 1638, 10)     -- Teleport: Thunder Bluff
-if GetExpansionLevel() < 3 and WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
-    addSpell(3567, 85, { x = 0.50, y = 0.50, z = 0 }, true, 1637, 10) -- Teleport: Orgrimmar (pre-Cata, map center approximation)
+if FarstriderLibData.CLASSIC_UI_MAPS then
+    addItem(21711, 1, { x = 7783.5, y = -2396.9, z = 0 }, false, 493, 60)   -- Lunar Festival Invitation
+    -- Mage Teleports
+    addSpell(3561, 0, { x = -9003.6, y = 871.5, z = 0 }, false, 1519, 10)   -- Teleport: Stormwind
+    addSpell(3562, 0, { x = -4606.2, y = -927.1, z = 0 }, false, 1537, 10)  -- Teleport: Ironforge
+    addSpell(3565, 1, { x = 9663.5, y = 2510.1, z = 0 }, false, 1657, 10)   -- Teleport: Darnassus
+    addSpell(3563, 0, { x = 1769.1, y = 57.7, z = 0 }, false, 1497, 10)     -- Teleport: Undercity
+    addSpell(3566, 1, { x = -982.2, y = 287.0, z = 0 }, false, 1638, 10)    -- Teleport: Thunder Bluff
+    if FarstriderLibData.EXPANSION_LEVEL < 3 then
+        addSpell(3567, 1, { x = 1473.2, y = -4223.4, z = 0 }, false, 1637, 10) -- Teleport: Orgrimmar (pre-Cata Valley of Spirits)
+    else
+        addSpell(3567, 1, { x = 1443.0, y = -4497.8, z = 0 }, false, 1637, 10) -- Teleport: Orgrimmar
+    end
 else
-    addSpell(3567, 85, { x = 0.57, y = 0.90, z = 0 }, true, 1637, 10) -- Teleport: Orgrimmar
+    addItem(21711, 80, { x = 0.44, y = 0.46, z = 0 }, true, 493, 60)      -- Lunar Festival Invitation
+    -- Mage Teleports
+    addSpell(3561, 84, { x = 0.49, y = 0.87, z = 0 }, true, 1519, 10)     -- Teleport: Stormwind
+    addSpell(3562, 87, { x = 0.27, y = 0.07, z = 0 }, true, 1537, 10)     -- Teleport: Ironforge
+    addSpell(3565, 89, { x = 0.44, y = 0.78, z = 0 }, true, 1657, 10)     -- Teleport: Darnassus
+    addSpell(3563, 998, { x = 0.85, y = 0.17, z = 0 }, true, 1497, 10)    -- Teleport: Undercity
+    addSpell(3566, 88, { x = 0.22, y = 0.19, z = 0 }, true, 1638, 10)     -- Teleport: Thunder Bluff
+    addSpell(3567, 85, { x = 0.57, y = 0.90, z = 0 }, true, 1637, 10)     -- Teleport: Orgrimmar
 end
 
 -- M+ Dungeon Teleports (learned by completing a timed Mythic+ for each dungeon, 8hr cooldown)
-if GetExpansionLevel() >= 6 then
+if FarstriderLibData.EXPANSION_LEVEL >= 6 then
     -- MoP
     addSpell(131204, 870, { x = 957.34899902344, y = -2475.7099609375, z = 188 }, false, 5974, 480)             -- Path of the Jade Serpent (Temple of the Jade Serpent)
     addSpell(131205, 870, { x = -575.95, y = 1465.17, z = 0 }, false, 5805, 480)                                -- Path of the Stout Brew (Stormstout Brewery)
@@ -460,7 +584,7 @@ if GetExpansionLevel() >= 6 then
     -- Raid Teleports - WoD
     addSpell(169771, 1116, { x = 6944.70, y = -829.01, z = 0 }, false, 6721, 480)                               -- Blackrock Foundry Teleport
 
-    if GetExpansionLevel() >= 8 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 8 then
         -- Shadowlands
         addSpell(354462, 2222, { x = -3316.6354980469, y = -4094.1596679688, z = 6605.7768554688 }, false, 10534, 480) -- Path of the Courageous (The Necrotic Wake)
         addSpell(354463, 2222, { x = 2081.96875, y = -3118.6076660156, z = 3273.7973632812 }, false, 11462, 480)       -- Path of the Plagued (Plaguefall)
@@ -480,7 +604,7 @@ if GetExpansionLevel() >= 6 then
         addSpell(373192, 2374, { x = -3704.53, y = 344.43, z = 0 }, false, 13536, 480)                                 -- Return to the Sepulcher
     end
 
-    if GetExpansionLevel() >= 9 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 9 then
         -- Dragonflight
         addSpell(393222, 0, { x = -6063.392578125, y = -3157.1545410156, z = 280.97717285156 }, false, 3, 480)         -- Path of the Watcher's Legacy (Uldaman: Legacy of Tyr)
         addSpell(393256, 2444, { x = 1364.5660400391, y = -160.13542175293, z = 115.10043334961 }, false, 13644, 480)  -- Path of the Clutch Defender (Ruby Life Pools)
@@ -510,7 +634,7 @@ if GetExpansionLevel() >= 6 then
         addSpell(432258, 2548, { x = -1174.16, y = 6040.54, z = 0 }, false, 14529, 480)                                -- Return to Amirdrassil
     end
 
-    if GetExpansionLevel() >= 10 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 10 then
         -- The War Within
         addSpell(445269, 2601, { x = 3440.2700195312, y = -2730.2673339844, z = 336.60205078125 }, false, 14795, 480)   -- Path of the Corrupted Foundry (The Stonevault)
         addSpell(445414, 2601, { x = 1445.2951660156, y = -162.24653625488, z = -46.08894729614 }, false, 14838, 480)   -- Path of the Arathi Flagship (The Dawnbreaker)
@@ -534,7 +658,7 @@ if GetExpansionLevel() >= 6 then
         addSpell(1239155, 2738, { x = 457.29, y = 1100.00, z = 0 }, false, 15336, 480)                                  -- Return to Manaforge Omega
     end
 
-    if GetExpansionLevel() >= 11 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 11 then
         -- Midnight
         addSpell(1254572, 2424, { x = 0.60, y = 0.50, z = 0 }, true, 15829, 480)        -- Path of Devoted Magistry (Magisters' Terrace)
         addSpell(1254400, 2395, { x = 0.60, y = 0.80, z = 0 }, true, 15808, 480)        -- Path of the Windrunners (Windrunner Spire)
@@ -549,22 +673,34 @@ if GetExpansionLevel() >= 6 then
 end
 
 -- The Burning Crusade
-if GetExpansionLevel() >= 1 then
+if FarstriderLibData.EXPANSION_LEVEL >= 1 then
     -- Both
     addHearthstone(28585)                                                   -- Ruby Slippers
-    addItem(30542, 109, { x = 0.3355, y = 0.6767, z = 0 }, true, 3712, 60)  -- Dimensional Ripper - Area 52
-    addItem(30544, 105, { x = 0.6091, y = 0.7008, z = 0 }, true, 3918, 60)  -- Ultrasafe Transporter: Toshley's Station
-    addItem(32757, 104, { x = 0.6621, y = 0.4398, z = 0 }, true, 3840, 15)  -- Blessed Medallion of Karabor
-    addItem(151016, 104, { x = 0.6621, y = 0.4398, z = 0 }, true, 3840, 60) -- Fractured Necrolyte Skull
-    -- Mage Teleports
-    addSpell(32271, 103, { x = 0.26, y = 0.46, z = 0 }, true, 3557, 10)     -- Teleport: Exodar
-    addSpell(32272, 110, { x = 0.56, y = 0.22, z = 0 }, true, 3487, 10)     -- Teleport: Silvermoon
-    addSpell(33690, 111, { x = 0.55, y = 0.40, z = 0 }, true, 3703, 10)     -- Teleport: Shattrath (Alliance)
-    addSpell(35715, 111, { x = 0.55, y = 0.40, z = 0 }, true, 3703, 10)     -- Teleport: Shattrath (Horde)
+    if FarstriderLibData.CLASSIC_UI_MAPS then
+        addItem(30542, 530, { x = 2941.2, y = 3612.9, z = 0 }, false, 3712, 60)     -- Dimensional Ripper - Area 52
+        addItem(30544, 530, { x = 1873.8, y = 5541.5, z = 0 }, false, 3918, 60)     -- Ultrasafe Transporter: Toshley's Station
+        addItem(32757, 530, { x = -3560.5, y = 583.4, z = 0 }, false, 3840, 15)     -- Blessed Medallion of Karabor
+        addItem(151016, 530, { x = -3560.5, y = 583.4, z = 0 }, false, 3840, 60)    -- Fractured Necrolyte Skull
+        -- Mage Teleports
+        addSpell(32271, 530, { x = -3933.8, y = -11341.1, z = 0 }, false, 3557, 10) -- Teleport: Exodar
+        addSpell(32272, 530, { x = 9976.2, y = -7079.2, z = 0 }, false, 3487, 10)   -- Teleport: Silvermoon
+        addSpell(33690, 530, { x = -1822.3, y = 5416.8, z = 0 }, false, 3703, 10)   -- Teleport: Shattrath (Alliance)
+        addSpell(35715, 530, { x = -1822.3, y = 5416.8, z = 0 }, false, 3703, 10)   -- Teleport: Shattrath (Horde)
+    else
+        addItem(30542, 109, { x = 0.3355, y = 0.6767, z = 0 }, true, 3712, 60)  -- Dimensional Ripper - Area 52
+        addItem(30544, 105, { x = 0.6091, y = 0.7008, z = 0 }, true, 3918, 60)  -- Ultrasafe Transporter: Toshley's Station
+        addItem(32757, 104, { x = 0.6621, y = 0.4398, z = 0 }, true, 3840, 15)  -- Blessed Medallion of Karabor
+        addItem(151016, 104, { x = 0.6621, y = 0.4398, z = 0 }, true, 3840, 60) -- Fractured Necrolyte Skull
+        -- Mage Teleports
+        addSpell(32271, 103, { x = 0.26, y = 0.46, z = 0 }, true, 3557, 10)     -- Teleport: Exodar
+        addSpell(32272, 110, { x = 0.56, y = 0.22, z = 0 }, true, 3487, 10)     -- Teleport: Silvermoon
+        addSpell(33690, 111, { x = 0.55, y = 0.40, z = 0 }, true, 3703, 10)     -- Teleport: Shattrath (Alliance)
+        addSpell(35715, 111, { x = 0.55, y = 0.40, z = 0 }, true, 3703, 10)     -- Teleport: Shattrath (Horde)
+    end
 end
 
 -- Wrath of the Lich King
-if GetExpansionLevel() >= 2 then
+if FarstriderLibData.EXPANSION_LEVEL >= 2 then
     -- Both
     addHearthstone(37118)                                                     -- Scroll of Recall
     addHearthstone(44314)                                                     -- Scroll of Recall II
@@ -582,7 +718,11 @@ if GetExpansionLevel() >= 2 then
     addItem(48955, 125, { x = 0.5592, y = 0.4679, z = 661 }, true, 4613, 30)  -- Etched Loop of the Kirin Tor
     addItem(48956, 125, { x = 0.5592, y = 0.4679, z = 661 }, true, 4613, 30)  -- Etched Ring of the Kirin Tor
     addItem(48957, 125, { x = 0.5592, y = 0.4679, z = 661 }, true, 4613, 30)  -- Etched Signet of the Kirin Tor
-    addItem(50287, 224, { x = 0.3692, y = 0.7599, z = 9 }, true, 35, 30)      -- Boots of the Bay
+    if FarstriderLibData.CLASSIC_UI_MAPS then
+        addItem(50287, 0, { x = -14284.4, y = 558.1, z = 9 }, false, 35, 30)  -- Boots of the Bay
+    else
+        addItem(50287, 224, { x = 0.3692, y = 0.7599, z = 9 }, true, 35, 30)  -- Boots of the Bay
+    end
     addItem(51557, 125, { x = 0.5592, y = 0.4679, z = 661 }, true, 4613, 30)  -- Runed Signet of the Kirin Tor
     addItem(51558, 125, { x = 0.5592, y = 0.4679, z = 661 }, true, 4613, 30)  -- Runed Loop of the Kirin Tor
     addItem(51559, 125, { x = 0.5592, y = 0.4679, z = 661 }, true, 4613, 30)  -- Runed Ring of the Kirin Tor
@@ -592,12 +732,17 @@ if GetExpansionLevel() >= 2 then
     addItem(37863, 0, { x = -8466.13, y = -2414.46, z = 0 }, false, 1584, 60) -- Direbrew's Remote
     -- Mage Teleports
     addSpell(53140, 125, { x = 0.56, y = 0.47, z = 0 }, true, 4613, 10)       -- Teleport: Dalaran - Northrend
-    addSpell(49358, 51, { x = 0.47, y = 0.55, z = 0 }, true, 75, 10)          -- Teleport: Stonard
-    addSpell(49359, 70, { x = 0.67, y = 0.51, z = 0 }, true, 513, 10)         -- Teleport: Theramore
+    if FarstriderLibData.CLASSIC_UI_MAPS then
+        addSpell(49358, 0, { x = -10455.5, y = -3260.2, z = 0 }, false, 75, 10)  -- Teleport: Stonard
+        addSpell(49359, 1, { x = -3818.3, y = -4492.5, z = 0 }, false, 513, 10)  -- Teleport: Theramore
+    else
+        addSpell(49358, 51, { x = 0.47, y = 0.55, z = 0 }, true, 75, 10)      -- Teleport: Stonard
+        addSpell(49359, 70, { x = 0.67, y = 0.51, z = 0 }, true, 513, 10)     -- Teleport: Theramore
+    end
 end
 
 -- Cataclysm
-if GetExpansionLevel() >= 3 then
+if FarstriderLibData.EXPANSION_LEVEL >= 3 then
     -- Both
     addHearthstone(54452)                                                    -- Ethereal Portal
     addHearthstone(64488)                                                    -- The Innkeeper's Daughter
@@ -635,7 +780,7 @@ if GetExpansionLevel() >= 3 then
 end
 
 -- Mists of Pandaria
-if GetExpansionLevel() >= 4 then
+if FarstriderLibData.EXPANSION_LEVEL >= 4 then
     -- Both
     addHearthstone(93672)                                                   -- Dark Portal
     addItem(103678, 554, { x = 0.3451, y = 0.5550, z = 0 }, true, 6757, 10) -- Time-Lost Artifact
@@ -673,7 +818,7 @@ if GetExpansionLevel() >= 4 then
 end
 
 -- Warlords of Draenor
-if GetExpansionLevel() >= 5 then
+if FarstriderLibData.EXPANSION_LEVEL >= 5 then
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
         addItem(110560, 582, { x = 0.2992, y = 0.3392, z = 0 }, true, 6790, 30, function() return C_QuestLog.IsQuestFlaggedCompleted(34586) end) -- Garrison Hearthstone
@@ -714,19 +859,21 @@ if GetExpansionLevel() >= 5 then
 end
 
 -- Classic class teleports (pre-Legion destinations)
-if WOW_PROJECT_ID ~= WOW_PROJECT_MAINLINE then
+if FarstriderLibData.CLASSIC_WORLD then
     -- Death Knight: Death Gate to original Acherus over Eastern Plaguelands (WotLK+)
-    if GetExpansionLevel() >= 2 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 2 and FarstriderLibData.CLASSIC_UI_MAPS then
+        addSpell(50977, 0, { x = 2360.4, y = -5673.8, z = 0 }, false, 4281, 10) -- Death Gate
+    elseif FarstriderLibData.EXPANSION_LEVEL >= 2 then
         addSpell(50977, 23, { x = 0.84, y = 0.50, z = 0 }, true, 4281, 10) -- Death Gate
     end
     -- Monk: Zen Pilgrimage to Peak of Serenity in Kun-Lai Summit (MoP+)
-    if GetExpansionLevel() >= 4 then
+    if FarstriderLibData.EXPANSION_LEVEL >= 4 then
         addSpell(126892, 379, { x = 0.49, y = 0.42, z = 0 }, true, 5956, 10) -- Zen Pilgrimage
     end
 end
 
 -- Legion
-if GetExpansionLevel() >= 6 then
+if FarstriderLibData.EXPANSION_LEVEL >= 6 then
     -- Both
     addItem(139599, 627, { x = 0.6092, y = 0.4472, z = 739 }, true, 7502, 30)                                                                                                               -- Empowered Ring of the Kirin Tor
     addHearthstone(142298)                                                                                                                                                                  -- Astonishingly Scarlet Slippers
@@ -752,7 +899,7 @@ if GetExpansionLevel() >= 6 then
 end
 
 -- Battle for Azeroth
-if GetExpansionLevel() >= 7 then
+if FarstriderLibData.EXPANSION_LEVEL >= 7 then
     -- Both
     addHearthstone(168907) -- Holographic Digitalization Hearthstone
 
@@ -852,7 +999,7 @@ if GetExpansionLevel() >= 7 then
 end
 
 -- Shadowlands
-if GetExpansionLevel() >= 8 then
+if FarstriderLibData.EXPANSION_LEVEL >= 8 then
     -- Both
     addHearthstone(180290)                                                 -- Night Fae Hearthstone
     addHearthstone(182773)                                                 -- Necrolord Hearthstone
@@ -874,7 +1021,7 @@ if GetExpansionLevel() >= 8 then
 end
 
 -- Dragonflight
-if GetExpansionLevel() >= 9 then
+if FarstriderLibData.EXPANSION_LEVEL >= 9 then
     -- Both
     addHearthstone(206195)                                                                                                                     -- Path of the Naaru
     addHearthstone(193588)                                                                                                                     -- Timewalker's Hearthstone
@@ -888,7 +1035,7 @@ if GetExpansionLevel() >= 9 then
 end
 
 -- The War Within
-if GetExpansionLevel() >= 10 then
+if FarstriderLibData.EXPANSION_LEVEL >= 10 then
     -- Both
     addHearthstone(208704) -- Deepdweller's Earthen Hearthstone
     addHearthstone(209035) -- Hearthstone of the Flame
@@ -916,7 +1063,7 @@ if GetExpansionLevel() >= 10 then
 end
 
 -- Midnight
-if GetExpansionLevel() >= 11 then
+if FarstriderLibData.EXPANSION_LEVEL >= 11 then
     -- Both
     addItem(248485, 2537, { x = 0.50, y = 0.50, z = 0 }, true, 2037, 30)                                                                                                                            -- Wormhole Generator: Quel'Thalas
     addItem(266370, 2537, { x = 0.50, y = 0.50, z = 0 }, true, 2037, 30)                                                                                                                            -- Dundun's Abundant Travel Method
@@ -931,7 +1078,7 @@ if GetExpansionLevel() >= 11 then
     addSpell(1259190, 2393, { x = 0.50, y = 0.50, z = 0 }, true, 3487, 10)                                                                                                                          -- Teleport: Silvermoon City
 end
 
-if GetExpansionLevel() >= 10 then
+if FarstriderLibData.EXPANSION_LEVEL >= 10 then
     -- Housing: Teleport to Plot
     do
         local from = {
@@ -971,15 +1118,12 @@ if GetExpansionLevel() >= 10 then
     end
     -- Housing: Return from Plot
     do
-        if not FarstriderLibData_CharacterSettings then
-            FarstriderLibData_CharacterSettings = {}
-        end
-
         local function getHousingExitLocation()
-            return FarstriderLibData_CharacterSettings.housingExitLocation or FarstriderLibData.Util.GetBindingLocation()
+            local saved = FarstriderLibData_CharacterSettings and FarstriderLibData_CharacterSettings.housingExitLocation
+            return saved or FarstriderLibData.Util.GetBindingLocation()
         end
         local function getHousingExitAreaName()
-            local saved = FarstriderLibData_CharacterSettings.housingExitLocation
+            local saved = FarstriderLibData_CharacterSettings and FarstriderLibData_CharacterSettings.housingExitLocation
             if saved then
                 local info = C_Map.GetMapInfo(saved.mapId)
                 return info and info.name or L["Unknown Location"]
@@ -1005,12 +1149,12 @@ if GetExpansionLevel() >= 10 then
     end
 end
 
-addDynamicItemWithMultipleIds(hearthstones, FarstriderLibData.Util.GetBindingLocation, GetBindLocation, (select(3, UnitRace("player")) == 1 and GetExpansionLevel() >= 10) and 12.5 or 30, function() return FarstriderLibData.AreaL[GetBindLocation()] end) -- Hearthstones
+addDynamicItemWithMultipleIds(hearthstones, FarstriderLibData.Util.GetBindingLocation, GetBindLocation, (select(3, UnitRace("player")) == 1 and FarstriderLibData.EXPANSION_LEVEL >= 10) and 12.5 or 30, function() return FarstriderLibData.AreaL[GetBindLocation()] end) -- Hearthstones
 
 table.sort(Connections.helpfulItems, function(a, b) return a < b end)
 
-if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
-    local f = CreateFrame("Frame")
+if not FarstriderLibData.CLASSIC_WORLD then
+    local f = _fld.createFrame("Frame")
     f:RegisterEvent("PLAYER_HOUSE_LIST_UPDATED")
     f:SetScript("OnEvent", function(_, _, ...)
         local houses = ...

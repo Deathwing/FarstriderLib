@@ -25,8 +25,8 @@ function Util.GetPlayerLocation()
         if parentMapId then
             uiMapId = parentMapId
 
-            local instanceId = EJ_GetInstanceForMap(uiMapId)
-            local dungeonEntrances = C_EncounterJournal.GetDungeonEntrancesForMap(parentMapId)
+            local instanceId = EJ_GetInstanceForMap and EJ_GetInstanceForMap(uiMapId)
+            local dungeonEntrances = C_EncounterJournal and C_EncounterJournal.GetDungeonEntrancesForMap and C_EncounterJournal.GetDungeonEntrancesForMap(parentMapId)
             if instanceId and dungeonEntrances then
                 for _, entrance in ipairs(dungeonEntrances) do
                     if entrance.journalInstanceID == instanceId then
@@ -93,7 +93,7 @@ end
 function Util.CanUseSpell(spellId)
     if not spellId then return false end
 
-    if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE then
+    if WOW_PROJECT_ID == WOW_PROJECT_MAINLINE or FarstriderLibData.IS_FOREVER then
         if InCombatLockdown() then return false end
     end
 

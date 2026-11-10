@@ -4,6 +4,8 @@
 
 if not FarstriderLib.Internal then return end
 
+local _fl = FarstriderLib.Internal
+
 --- Look up a corrected Z elevation from config.
 --- Many Shadowlands / Dragonflight maps share a continent but differ in altitude;
 --- this table prevents incorrect "direct fly" distance calculations.
@@ -55,11 +57,13 @@ function FarstriderLib.FindTrailTo(goalMapId, endX, endY, endZ)
         local parentMapId = C_Map.GetMapInfo(playerMapId).parentMapID
         if parentMapId then
             playerMapId = parentMapId
-            local instanceId = EJ_GetInstanceForMap(playerMapId)
-            local dungeonEntrances = C_EncounterJournal.GetDungeonEntrancesForMap(parentMapId)
-            for _, entrance in ipairs(dungeonEntrances) do
-                if entrance.journalInstanceID == instanceId then
-                    playerPosition = entrance.position
+            local instanceId = EJ_GetInstanceForMap and EJ_GetInstanceForMap(playerMapId)
+            local dungeonEntrances = C_EncounterJournal and C_EncounterJournal.GetDungeonEntrancesForMap and C_EncounterJournal.GetDungeonEntrancesForMap(parentMapId)
+            if instanceId and dungeonEntrances then
+                for _, entrance in ipairs(dungeonEntrances) do
+                    if entrance.journalInstanceID == instanceId then
+                        playerPosition = entrance.position
+                    end
                 end
             end
         end
@@ -73,8 +77,11 @@ function FarstriderLib.FindTrailTo(goalMapId, endX, endY, endZ)
 end
 
 -- Auto-initialize on PLAYER_LOGIN
-local f = CreateFrame("Frame")
+local f = _fl.createFrame("Frame")
 f:RegisterEvent("PLAYER_LOGIN")
 f:SetScript("OnEvent", function()
     FarstriderLib.Pathfinding:Rebuild()
 end)
+if IsLoggedIn() then
+    _fl.after(0, function() FarstriderLib.Pathfinding:Rebuild() end)
+end

@@ -6,6 +6,8 @@
 
 if not FarstriderLib.Internal then return end
 
+local _fl = FarstriderLib.Internal
+
 ---@class Logger
 ---@field frame Frame?
 ---@field scrollFrame ScrollFrame?
@@ -73,7 +75,7 @@ end
 function Logger:CreateLogWindow()
     if self.frame then return end
 
-    local f = CreateFrame("Frame", nil, UIParent)
+    local f = _fl.createFrame("Frame", nil, UIParent)
     f:SetSize(500, 300)
     f:SetPoint("CENTER")
     f:EnableMouse(true); f:SetMovable(true); f:SetResizable(true)
@@ -85,11 +87,11 @@ function Logger:CreateLogWindow()
     bg:SetAllPoints(f)
     bg:SetColorTexture(0, 0, 0, 0.8)
 
-    local scroll = CreateFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
+    local scroll = _fl.createFrame("ScrollFrame", nil, f, "UIPanelScrollFrameTemplate")
     scroll:SetPoint("TOPLEFT", f, "TOPLEFT", 10, -40)
     scroll:SetPoint("BOTTOMRIGHT", f, "BOTTOMRIGHT", -30, 10)
 
-    local edit = CreateFrame("EditBox", nil, scroll)
+    local edit = _fl.createFrame("EditBox", nil, scroll)
     edit:SetMultiLine(true)
     edit:SetFontObject(GameFontNormal)
     edit:EnableMouse(true)
@@ -113,7 +115,7 @@ function Logger:CreateLogWindow()
         OnSize(f, w, h)
     end
 
-    local grip = CreateFrame("Button", nil, f)
+    local grip = _fl.createFrame("Button", nil, f)
     grip:SetSize(16, 16)
     grip:SetPoint("BOTTOMRIGHT", f, -4, 4)
     grip:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
@@ -127,7 +129,7 @@ function Logger:CreateLogWindow()
         OnSize(f, w, h)
     end)
 
-    local copyBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    local copyBtn = _fl.createFrame("Button", nil, f, "UIPanelButtonTemplate")
     copyBtn:SetSize(70, 20)
     copyBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -10, -10)
     copyBtn:SetText("Copy All")
@@ -136,7 +138,7 @@ function Logger:CreateLogWindow()
         edit:SetFocus()
     end)
 
-    local clearBtn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+    local clearBtn = _fl.createFrame("Button", nil, f, "UIPanelButtonTemplate")
     clearBtn:SetSize(70, 20)
     clearBtn:SetPoint("TOPRIGHT", f, "TOPRIGHT", -90, -10)
     clearBtn:SetText("Clear All")
@@ -157,7 +159,7 @@ function Logger:CreateLogWindow()
     end
 
     for i, def in ipairs(FILTER_DEFS) do
-        local btn = CreateFrame("Button", nil, f, "UIPanelButtonTemplate")
+        local btn = _fl.createFrame("Button", nil, f, "UIPanelButtonTemplate")
         btn:SetSize(55, 20)
         btn:SetPoint("TOPLEFT", f, "TOPLEFT", 10 + (i - 1) * 58, -10)
         UpdateFilterBtn(btn, def)

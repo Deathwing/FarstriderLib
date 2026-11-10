@@ -5,6 +5,8 @@
 
 if not FarstriderLib.Internal then return end
 
+local _fl = FarstriderLib.Internal
+
 local hbdp
 local warnedMissingHbdPins = false
 
@@ -93,13 +95,13 @@ local function SetWaypointImpl(waypoint, texture, options)
         idx = idx + 1
 
         if not FarstriderLibMapOverlay then
-            local overlay = CreateFrame("Frame", "FarstriderLibMapOverlay", WorldMapFrame.BorderFrame)
+            local overlay = _fl.createFrame("Frame", "FarstriderLibMapOverlay", WorldMapFrame.BorderFrame)
             overlay:SetFrameStrata("HIGH")
             overlay:SetFrameLevel(9000)
             overlay:SetAllPoints()
         end
 
-        local worldmap = CreateFrame("Button", nil, FarstriderLibMapOverlay)
+        local worldmap = _fl.createFrame("Button", nil, FarstriderLibMapOverlay)
         worldmap.icon = worldmap:CreateTexture(nil, "OVERLAY")
         worldmap.icon:SetAllPoints()
         worldmap.icon:SetBlendMode("BLEND")
@@ -339,7 +341,7 @@ function FarstriderLib.Debug.NavigationTest()
 end
 
 -- Debug-only PLAYER_LOGIN: render all nav nodes on the world map
-local df = CreateFrame("Frame")
+local df = _fl.createFrame("Frame")
 df:RegisterEvent("PLAYER_LOGIN")
 df:SetScript("OnEvent", function()
     for _, navLocation in pairs(FarstriderLib.Pathfinding.allNodes) do

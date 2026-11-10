@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.5.4
+
+### Fixes
+- Added connections that were defined with retail map IDs and never loaded on Classic clients that use the original zone maps (Classic Era, TBC, Wrath and Cataclysm Classic):
+  - All four: the Deeprun Tram, mage teleports, the Everlook and Gadgetzan Dimensional Ripper and Ultrasafe Transporter, Atiesh, Teleport: Moonglade, the Lunar Festival Invitation and the Menethil Harbor–Theramore boat
+  - TBC and later: the Blasted Lands, Shattrath and Exodar–Darnassus portals, the Orb of Translocation to Silvermoon, the Blessed Medallion of Karabor and the Area 52 and Toshley's Station Ripper and Transporter
+  - Wrath and Cataclysm Classic: Death Gate, the Dalaran portals, the Menethil Harbor–Valgarde and Stormwind–Borean Tundra boats, the Shattered Sun Staging Area flight paths and the Sholazar Basin–Un'Goro Crater portal, plus Boots of the Bay on Wrath
+  - Cataclysm Classic: the Booty Bay–Ratchet boat and the Orgrimmar zeppelins
+- French translations now load; the French locale file was missing from the data file lists ([#3](https://github.com/Deathwing/FarstriderLib/pull/3), thanks @Neogeekmo)
+
+### Changes
+- Added support for Interface 120105 (Patch 12.1.5)
+- Added support for World of Warcraft: Forever (Interface 16001) with Forever area and waypoint data from the live 1.60.1.70862 game build, the Powderfuse Port boat and the faction skycutters to Zephras Isle; as on retail, teleport spells are not suggested in combat there, and being inside a dungeon no longer causes an error
+- When more than one copy from this release or later is installed, the newest one is used; copies from before this release still take precedence
+
 ## 1.5.3
 
 ### Changes

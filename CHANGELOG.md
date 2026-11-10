@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.4.4
+
+### Changes
+- Added support for Interface 120105 (Patch 12.1.5)
+- Added support for World of Warcraft: Forever (Interface 16001); being inside a dungeon there no longer causes an error, as Forever has no Encounter Journal
+- The travel graph is also built when FarstriderLib is loaded after login, so it can be loaded on demand
+- When more than one copy from this release or later is installed, the newest one is used; copies from before this release still take precedence
+
 ## 1.4.3
 
 ### Changes
