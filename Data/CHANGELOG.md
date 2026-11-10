@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.5.5
+
+### Fixes
+- Added the guild cloaks (Wrap of Unity, Shroud of Cooperation, Cloak of Coordination) on Cataclysm Classic; like the other 1.5.4 connections, they were defined with retail map IDs and never loaded there
+
 ## 1.5.4
 
 ### Fixes

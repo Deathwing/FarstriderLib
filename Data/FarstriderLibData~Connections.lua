@@ -750,16 +750,28 @@ if FarstriderLibData.EXPANSION_LEVEL >= 3 then
 
     -- Alliance
     if UnitFactionGroup("player") == "Alliance" then
-        addItem(63206, 84, { x = 0.4637, y = 0.9028, z = 67 }, true, 1519, 30) -- Wrap of Unity
-        addItem(63352, 84, { x = 0.4637, y = 0.9028, z = 67 }, true, 1519, 30) -- Shroud of Cooperation
-        addItem(65360, 84, { x = 0.4637, y = 0.9028, z = 67 }, true, 1519, 30) -- Cloak of Coordination
+        if FarstriderLibData.CLASSIC_UI_MAPS then
+            addItem(63206, 0, { x = -9041.6, y = 917.2, z = 67 }, false, 1519, 30) -- Wrap of Unity
+            addItem(63352, 0, { x = -9041.6, y = 917.2, z = 67 }, false, 1519, 30) -- Shroud of Cooperation
+            addItem(65360, 0, { x = -9041.6, y = 917.2, z = 67 }, false, 1519, 30) -- Cloak of Coordination
+        else
+            addItem(63206, 84, { x = 0.4637, y = 0.9028, z = 67 }, true, 1519, 30) -- Wrap of Unity
+            addItem(63352, 84, { x = 0.4637, y = 0.9028, z = 67 }, true, 1519, 30) -- Shroud of Cooperation
+            addItem(65360, 84, { x = 0.4637, y = 0.9028, z = 67 }, true, 1519, 30) -- Cloak of Coordination
+        end
     end
 
     -- Horde
     if UnitFactionGroup("player") == "Horde" then
-        addItem(63207, 85, { x = 0.5710, y = 0.8981, z = 18 }, true, 1637, 30) -- Wrap of Unity
-        addItem(63353, 85, { x = 0.5710, y = 0.8981, z = 18 }, true, 1637, 30) -- Shroud of Cooperation
-        addItem(65274, 85, { x = 0.5710, y = 0.8981, z = 18 }, true, 1637, 30) -- Cloak of Coordination
+        if FarstriderLibData.CLASSIC_UI_MAPS then
+            addItem(63207, 1, { x = 1445.2, y = -4499.5, z = 18 }, false, 1637, 30) -- Wrap of Unity
+            addItem(63353, 1, { x = 1445.2, y = -4499.5, z = 18 }, false, 1637, 30) -- Shroud of Cooperation
+            addItem(65274, 1, { x = 1445.2, y = -4499.5, z = 18 }, false, 1637, 30) -- Cloak of Coordination
+        else
+            addItem(63207, 85, { x = 0.5710, y = 0.8981, z = 18 }, true, 1637, 30) -- Wrap of Unity
+            addItem(63353, 85, { x = 0.5710, y = 0.8981, z = 18 }, true, 1637, 30) -- Shroud of Cooperation
+            addItem(65274, 85, { x = 0.5710, y = 0.8981, z = 18 }, true, 1637, 30) -- Cloak of Coordination
+        end
     end
 
     -- Tol Barad
