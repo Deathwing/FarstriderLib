@@ -10,6 +10,7 @@
   <Script file="Locale\FarstriderLibData_Locale.ruRU.lua" />
   <Script file="Locale\FarstriderLibData_Locale.zhCN.lua" />
   <Script file="Locale\FarstriderLibData_Locale.zhTW.lua" />
+  <Script file="Locale\FarstriderLibData_Locale.frFR.lua" />
 
   <!-- Core -->
   <Script file="FarstriderLibData~Config.lua" />
