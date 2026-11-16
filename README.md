@@ -21,6 +21,9 @@ local optimizedPath, path, edges = FarstriderLib_API.FindTrailTo(goalMapId, endX
 -- Re-initialize after data changes
 FarstriderLib_API.Rebuild()
 
+-- Override the assumed average travel speed in yards per second (rebuilds the graph)
+FarstriderLib_API.SetTravelSpeed(11)
+
 -- Access data layer
 local waypoints = FarstriderLib_API.DATA.WAYPOINTS
 local config    = FarstriderLib_API.DATA.CONFIG

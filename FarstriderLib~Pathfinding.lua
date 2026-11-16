@@ -61,6 +61,8 @@ end
 local TRAVEL_COST_MULTIPLIER = 1 / 55 -- avg dragonriding speed
 if WOW_PROJECT_ID == WOW_PROJECT_MISTS_CLASSIC then
     TRAVEL_COST_MULTIPLIER = 1 / 31   -- avg 280% flying speed
+elseif WOW_PROJECT_ID == WOW_PROJECT_CAMELOT then
+    TRAVEL_COST_MULTIPLIER = 1 / 11   -- WoW: Forever has no flying; 160% ground mount (7 yd/s * 1.6)
 end
 
 local DIRECT_TRAVEL_COST_MULTIPLIER = TRAVEL_COST_MULTIPLIER * 0.8
@@ -865,6 +867,14 @@ end
 ---@param newMultiplier number
 function Pathfinding:ChangeTravelCostMultiplier(newMultiplier)
     TRAVEL_COST_MULTIPLIER = newMultiplier
+    DIRECT_TRAVEL_COST_MULTIPLIER = newMultiplier * 0.8
     FarstriderLib.Logger:Info("Travel cost multiplier changed to:", newMultiplier)
     self:Rebuild()
+end
+
+--- Set the assumed average travel speed and rebuild the graph.
+---@param yardsPerSecond number
+function Pathfinding:SetTravelSpeed(yardsPerSecond)
+    if type(yardsPerSecond) ~= "number" or yardsPerSecond <= 0 then return end
+    self:ChangeTravelCostMultiplier(1 / yardsPerSecond)
 end

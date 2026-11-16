@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Changes
+- WoW: Forever now estimates travel time at ground-mount speed (11 yd/s) instead of the skyriding speed, as it has no flying
+- Added `FarstriderLib_API.SetTravelSpeed(yardsPerSecond)` to override the assumed travel speed
+
+### Fixes
+- Changing the travel speed now also updates the direct-travel estimate
+
 ## 1.4.4
 
 ### Changes

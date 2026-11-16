@@ -10,6 +10,7 @@ local lib = FarstriderLib_API
 if lib and lib.Internal then lib.Internal = nil end
 lib.DATA = FarstriderLib.Data
 lib.Rebuild = FarstriderLib.Pathfinding.Rebuild
+lib.SetTravelSpeed = function(yardsPerSecond) FarstriderLib.Pathfinding:SetTravelSpeed(yardsPerSecond) end
 lib.FindTrail = FarstriderLib.FindTrail
 lib.FindTrailTo = FarstriderLib.FindTrailTo
 
