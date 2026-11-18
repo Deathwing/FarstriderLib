@@ -12,6 +12,7 @@
 	<Script file='FarstriderLib~Pathfinding.lua' />
 	<Script file='FarstriderLib~Debug.lua' /> <!-- REMOVE_LINE -->
 	<Script file='FarstriderLib~Core.lua' />
+	<Script file='FarstriderLib~Preflight.lua' />
 
 	<!-- Cleanup -->
 	<Script file="FarstriderLib~Finalizer.lua" />

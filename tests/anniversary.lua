@@ -35,9 +35,9 @@ check(connections:find("-- Stormwind <-> Caverns of Time (Anniversary)", 1, true
     "Caverns of Time landing map 74 / area 2300 on anniversary edges")
 
 -- Unit-test the holiday helper against a mock calendar / date API.
+-- Define the mock first, then Preflight's strict_api (when STRICT_CLIENT is set),
+-- then load the helper — so the mock cannot provide an API the live client lacks.
 FarstriderLibData = { Internal = {}, L = {} }
-assert(loadfile(root .. "/Data/FarstriderLibData~Util.lua"))()
-local U = FarstriderLibData.Util
 
 local calTime = { year = 2026, month = 11, monthDay = 20 }
 local dayEvents = {}
@@ -47,6 +47,18 @@ C_Calendar = {
     GetNumDayEvents = function() return #dayEvents end,
     GetDayEvent = function(_, _, i) return dayEvents[i] end,
 }
+
+local strictAudit
+do
+    local chunk = loadfile(root .. "/tests/strict.lua")
+    if chunk then
+        local audit = chunk()
+        if type(audit) == "function" then strictAudit = audit end
+    end
+end
+
+assert(loadfile(root .. "/Data/FarstriderLibData~Util.lua"))()
+local U = FarstriderLibData.Util
 
 dayEvents = { { calendarType = "HOLIDAY", title = "WoW's 22nd Anniversary" } }
 check(U.IsWowAnniversaryActive() == true, "calendar holiday titled Anniversary is active")
@@ -69,6 +81,14 @@ check(U.IsWowAnniversaryActive() == false, "non-2026 years need a calendar holid
 
 dayEvents = { { calendarType = "HOLIDAY", title = "WoW's Anniversary" } }
 check(U.IsWowAnniversaryActive() == true, "later years work via calendar title match")
+
+if strictAudit then
+    local bad = strictAudit()
+    if type(bad) == "table" and #bad > 0 then
+        failures = failures + 1
+        print("FAIL: strict audit: " .. table.concat(bad, ", "))
+    end
+end
 
 if failures == 0 then
     io.stdout:write("PASS (" .. passes .. ")\n")

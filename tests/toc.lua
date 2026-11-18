@@ -3,6 +3,13 @@
 local root = arg[0]:match("^(.*)/tests/[^/]+$") or "."
 local failures = 0
 
+-- Preflight's strict_api when STRICT_CLIENT is set (tests/strict.sh): this file
+-- only reads TOC text, so the install just confirms the empty mock is clean.
+do
+    local chunk = loadfile(root .. "/tests/strict.lua")
+    if chunk then chunk() end
+end
+
 local function fail(msg)
     failures = failures + 1
     print("FAIL: " .. msg)

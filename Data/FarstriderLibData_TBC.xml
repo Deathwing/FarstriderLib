@@ -25,6 +25,8 @@
     <!-- Connections -->
     <Script file="FarstriderLibData~Connections.lua" />
 
+    <Script file="FarstriderLibData~Preflight.lua" />
+
     <!-- Cleanup -->
     <Script file="FarstriderLibData~Finalizer.lua" />
 

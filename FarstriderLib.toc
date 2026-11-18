@@ -20,6 +20,7 @@
 ## Category-zhCN: 函数库
 ## Category-zhTW: 函式庫
 ## Version: 1.4.4
+## OptionalDeps: Preflight
 # UNCOMMENT_NEXT_LINE
 # ## OptionalDeps: FarstriderLibData
 
