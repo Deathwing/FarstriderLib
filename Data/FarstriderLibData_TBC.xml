@@ -22,6 +22,13 @@
     <!-- Data: Waypoints (TBC) -->
     <Include file="Waypoints\TBC\FarstriderLibData_Waypoints.xml" />
 
+    <!-- Data: Instances (TBC) -->
+    <Include file="Instances\TBC\FarstriderLibData_Instances.xml" />
+
+    <!-- Data: Taxi (TBC) -->
+    <Include file="Taxi\TBC\FarstriderLibData_Taxi.xml" />
+    <Script file="FarstriderLibData~Taxi.lua" />
+
     <!-- Connections -->
     <Script file="FarstriderLibData~Connections.lua" />
 

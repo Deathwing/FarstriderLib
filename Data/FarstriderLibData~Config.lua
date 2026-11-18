@@ -151,6 +151,20 @@ if FarstriderLibData.IS_FOREVER then
     Config.IsolatedAreas[2524] = _I() -- Darkspear Islands
 end
 
+-- Isolated regions: world-coordinate circles inside a zone (same group = same isolated area)
+Config.IsolatedRegions = {}
+
+if FarstriderLibData.CLASSIC_UI_MAPS and FarstriderLibData.EXPANSION_LEVEL < 3 then
+    Config.IsolatedAreas[1438] = _I() -- Teldrassil
+    Config.IsolatedAreas[1457] = _i() -- Darnassus
+
+    table.insert(Config.IsolatedRegions, { mapId = 1, x = 8709.0, y = 1014.2, radius = 250, group = _I() }) -- Rut'theran Village
+end
+
+if FarstriderLibData.CLASSIC_UI_MAPS and FarstriderLibData.EXPANSION_LEVEL >= 2 then
+    table.insert(Config.IsolatedRegions, { mapId = 571, x = 5790.0, y = 637.5, radius = 277, group = _I(), flyable = true }) -- Dalaran (centre and short half-side of UiMap 125)
+end
+
 -- Isolated continents: mapId -> boolean (true = continent is isolated, all areas must match exactly)
 Config.IsolatedContinents = {
     [2274] = true, -- Khaz Algar

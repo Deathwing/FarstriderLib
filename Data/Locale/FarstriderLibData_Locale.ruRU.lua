@@ -16,6 +16,8 @@ FarstriderLibData.L = {
     ["Waypoint_1004"] = "Сядьте на дирижабль из %s в %s",
     ["Waypoint_1005"] = "Используйте %s для %s",
     ["Waypoint_1006"] = "Каст %s на %s",
+    ["Waypoint_1007"] = "Покиньте %s",
+    ["Waypoint_1008"] = "Поезжайте на Подземном поезде в %s",
 };
 
 setmetatable(FarstriderLibData.L, {

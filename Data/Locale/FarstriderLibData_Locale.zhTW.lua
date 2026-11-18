@@ -16,6 +16,8 @@ FarstriderLibData.L = {
     ["Waypoint_1004"] = "從%s搭飛船到%s",
     ["Waypoint_1005"] = "使用%s到%s",
     ["Waypoint_1006"] = "施放%s到%s",
+    ["Waypoint_1007"] = "離開%s",
+    ["Waypoint_1008"] = "搭乘礦道地鐵前往%s",
 };
 
 setmetatable(FarstriderLibData.L, {

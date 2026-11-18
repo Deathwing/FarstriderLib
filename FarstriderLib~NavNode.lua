@@ -9,6 +9,7 @@ if not FarstriderLib.Internal then return end
 ---@field isDynamic boolean            True for nodes whose position is resolved at runtime
 ---@field noAutoconnect? boolean       True if this node should not receive auto-generated TRAVEL edges
 ---@field wizardsSanctum? boolean      True for Wizard's Sanctum interior nodes (flag 0x40)
+---@field nearFlightMaster? NavKey     Flight master node within range, set while travelling on the ground
 ---@field key NavKey                   Deterministic identifier ("mapId:x:y:z" or "dynamic:suffix")
 ---@field edges NavEdge[]              Permanent outgoing edges
 ---@field tempEdges NavEdge[]          Temporary edges added per-query (cleared after each search)

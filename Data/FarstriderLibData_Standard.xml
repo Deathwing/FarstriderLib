@@ -22,6 +22,9 @@
     <!-- Data: Waypoints (Standard) -->
     <Include file="Waypoints\Standard\FarstriderLibData_Waypoints.xml" />
 
+    <!-- Data: Instances (Standard) -->
+    <Include file="Instances\Standard\FarstriderLibData_Instances.xml" />
+
     <!-- Connections -->
     <Script file="FarstriderLibData~Connections.lua" />
 

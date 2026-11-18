@@ -18,7 +18,7 @@ if not FarstriderLibData.Internal then return end
 
 --- Describes an action the player can take (item use, spell cast, etc.).
 ---@class ActionOption
----@field type string  Action category: "item", "spell", "housing", "housing_return"
+---@field type string  Action category: "item", "spell", "housing", "housing_return", "leave_instance"
 ---@field data any     Payload (e.g. itemId or spellId)
 ---@field allowAny? boolean  If true, any matching action in the group suffices
 
@@ -33,6 +33,7 @@ if not FarstriderLibData.Internal then return end
 ---@field mapId number
 ---@field pos Vec3
 ---@field isUI? boolean
+---@field uiMapHint? number UIMapID to project a world location on (instance entrances)
 
 --- One end of a waypoint connection — either the source or destination.
 ---@class WaypointLocation
@@ -66,6 +67,7 @@ if not FarstriderLibData.Internal then return end
 ---@field ContinentMapOverrides { [MapId]: MapId } mapId -> continentMapId
 ---@field IsolatedAreas { [MapId]: number } mapId -> groupId (same groupId = same isolated area)
 ---@field IsolatedContinents { [MapId]: boolean } mapId -> whether the continent is isolated (all areas must match exactly)
+---@field IsolatedRegions? { mapId: MapId, x: number, y: number, radius: number, group: number, flyable?: boolean }[] world-coordinate circles that form their own isolated area (flyable ones are open while the travel speed is a flying speed)
 
 ---@class FarstriderLibDataAPI
 ---@field VERSION number the version of the API
@@ -73,6 +75,8 @@ if not FarstriderLibData.Internal then return end
 ---@field CONFIG Config the configuration data
 ---@field GetLocalizedString fun(locaId: number): string|nil returns the raw (unformatted) localized string for a locaId, or a fallback or nil if not available
 ---@field IsBindLocationSupported fun(): boolean returns whether the player's current bind location is supported
+---@field HasFlightData fun(uiMapId: number): boolean returns false when routes on the continent of uiMapId cannot use flight paths yet because this character has no flight data there (opening a flight master's map there fixes it), true when the data is available or not needed
 ---@field GetHousingData fun(): HouseInfo|nil returns the housing data of the player, or nil if not available
 ---@field UpdateHousingExitLocation fun() updates the player's housing exit location to their current location, if housing data is available
 ---@field GetHelpfulItems fun(): number[] returns a list of helpful item IDs that the player has, or an empty table if not available
+---@field GetInstanceEntrance fun(instanceMapId: number): Location|nil returns the entrance of a dungeon or raid (the instance map ID from GetInstanceInfo) in continent world coordinates, with uiMapHint naming the zone map to show it on, or nil if it is not known

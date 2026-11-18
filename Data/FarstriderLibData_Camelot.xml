@@ -22,6 +22,13 @@
     <!-- Data: Waypoints (Camelot) -->
     <Include file="Waypoints\Camelot\FarstriderLibData_Waypoints.xml" />
 
+    <!-- Data: Instances (Camelot) -->
+    <Include file="Instances\Camelot\FarstriderLibData_Instances.xml" />
+
+    <!-- Data: Taxi (Camelot) -->
+    <Include file="Taxi\Camelot\FarstriderLibData_Taxi.xml" />
+    <Script file="FarstriderLibData~Taxi.lua" />
+
     <!-- Connections -->
     <Script file="FarstriderLibData~Connections.lua" />
 

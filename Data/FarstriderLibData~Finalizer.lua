@@ -14,7 +14,11 @@ lib.GetLocalizedString = function(locaId)
     return FarstriderLibData.WaypointL[locaId] or FarstriderLibData.L["Waypoint_" .. locaId]
 end
 lib.IsBindLocationSupported = function()
-    return FarstriderLibData.AreaL[GetBindLocation()] ~= nil
+    return FarstriderLibData.Util.IsBindLocationSupported()
+end
+lib.HasFlightData = function(uiMapId)
+    local Taxi = FarstriderLibData.Taxi
+    return not Taxi or Taxi.HasFlightData(uiMapId)
 end
 lib.GetHousingData = function()
     return FarstriderLibData.HousingData
@@ -28,6 +32,9 @@ lib.UpdateHousingExitLocation = function()
 end
 lib.GetHelpfulItems = function()
     return FarstriderLibData.Connections.helpfulItems
+end
+lib.GetInstanceEntrance = function(instanceMapId)
+    return FarstriderLibData.Util.GetInstanceEntrance(instanceMapId)
 end
 
 -- legacy support for direct access, will be removed in a future update

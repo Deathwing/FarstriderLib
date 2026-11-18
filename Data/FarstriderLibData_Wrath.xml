@@ -22,6 +22,9 @@
     <!-- Data: Waypoints (Wrath) -->
     <Include file="Waypoints\Wrath\FarstriderLibData_Waypoints.xml" />
 
+    <!-- Data: Instances (Wrath) -->
+    <Include file="Instances\Wrath\FarstriderLibData_Instances.xml" />
+
     <!-- Connections -->
     <Script file="FarstriderLibData~Connections.lua" />
 

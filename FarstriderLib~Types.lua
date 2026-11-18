@@ -7,6 +7,7 @@ if not FarstriderLib.Internal then return end
 ---@field VERSION number the version of the API
 ---@field DATA FarstriderLibDataAPI access to the data API, which may be incomplete until the library is fully initialized
 ---@field Rebuild fun() clears the pathfinding cache and re-initializes. Call this after updating any data.
+---@field RegisterRebuildCallback fun(callback: fun()) calls callback after every rebuild of the travel graph, e.g. when flight paths are learned
 ---@field FindTrail fun(startMapId: number, startX: number, startY: number, startZ: number, goalMapId: number, endX: number, endY: number, endZ: number): table[]?, NavNode[]?, NavEdge[]? finds a path between two points and returns the optimized path, full path, and edges
 ---@field FindTrailTo fun(goalMapId: number, endX: number, endY: number, endZ: number): table[]?, NavNode[]?, NavEdge[]? finds a path from the player's current location to a goal point and returns the optimized path, full path, and edges
 

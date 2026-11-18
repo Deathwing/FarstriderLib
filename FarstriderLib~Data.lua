@@ -13,6 +13,8 @@ local L = {
     ["Waypoint_1004"] = "Take the zeppelin from %s to %s",
     ["Waypoint_1005"] = "Use %s to %s",
     ["Waypoint_1006"] = "Cast %s to %s",
+    ["Waypoint_1007"] = "Leave %s",
+    ["Waypoint_1008"] = "Take the Deeprun Tram to %s",
 };
 
 ---@type FarstriderLibDataAPI
@@ -25,12 +27,15 @@ local defaults = {
         ContinentMapOverrides = {},
         IsolatedAreas = {},
         IsolatedContinents = {},
+        IsolatedRegions = {},
     },
     GetLocalizedString = function(locaId) return L["Waypoint_" .. locaId] or L["Unknown Location"] end,
     IsBindLocationSupported = function() return false end,
+    HasFlightData = function() return true end,
     GetHousingData = function() return nil end,
     UpdateHousingExitLocation = function() end,
     GetHelpfulItems = function() return {} end,
+    GetInstanceEntrance = function() return nil end,
 }
 
 ---@type FarstriderLibDataAPI
