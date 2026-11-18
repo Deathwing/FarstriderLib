@@ -148,3 +148,41 @@ end
 function Util.IsBindLocationSupported()
     return FarstriderLibData.AreaL[GetBindLocation()] ~= nil
 end
+
+---True while WoW's Anniversary holiday is active (calendar event 1808).
+---Prefers today's HOLIDAY titles containing "anniversary"; falls back to the
+---known 2026 window (Nov 17–Dec 8) when the calendar has not loaded yet.
+---@return boolean
+function Util.IsWowAnniversaryActive()
+    local D = C_DateAndTime
+    if not (D and D.GetCurrentCalendarTime) then return false end
+    local t = D.GetCurrentCalendarTime()
+    if type(t) ~= "table" then return false end
+
+    local C = C_Calendar
+    if C and C.GetNumDayEvents and C.GetDayEvent then
+        local shown = C.GetMonthInfo and C.GetMonthInfo(0)
+        local offset = 0
+        if type(shown) == "table" then
+            offset = ((t.year or 0) - (shown.year or 0)) * 12 + ((t.month or 0) - (shown.month or 0))
+        end
+        local n = C.GetNumDayEvents(offset, t.monthDay) or 0
+        if n > 0 then
+            for i = 1, n do
+                local e = C.GetDayEvent(offset, t.monthDay, i)
+                if e and e.calendarType == "HOLIDAY" and type(e.title) == "string"
+                    and e.title:lower():find("anniversary", 1, true) then
+                    return true
+                end
+            end
+            return false
+        end
+    end
+
+    -- Calendar empty / unavailable: 22nd Anniversary window (Nov 17–Dec 8 2026).
+    if t.year == 2026 then
+        local stamp = (t.month or 0) * 100 + (t.monthDay or 0)
+        return stamp >= 1117 and stamp <= 1208
+    end
+    return false
+end

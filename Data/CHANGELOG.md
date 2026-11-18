@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- Data package loads on Midnight 12.1.7: per-game files use `[AllowLoadGameType ...]` instead of the removed `[Game]` TOC expansion, and interface 120107 is listed.
+
+### Added
+- Orgrimmar and Stormwind <-> Caverns of Time anniversary portals (active only while the holiday runs).
+
 ## 1.5.5
 
 ### Fixes

@@ -1,5 +1,13 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+- Loads as up to date on Midnight 12.1.7 (interface 120107).
+
+### Added
+- Orgrimmar and Stormwind portals to the Caverns of Time during WoW's Anniversary (Nov 17–Dec 8).
+
 ## 1.4.4
 
 ### Changes

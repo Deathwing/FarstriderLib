@@ -392,6 +392,20 @@ if FarstriderLibData.EXPANSION_LEVEL >= 6 then
     addPortal(false, 627, { x = 0.7427, y = 0.4930, z = 739 }, true, 7505, 1669, { x = 500.28100585938, y = 1469.6800537109, z = 742.44201660156 }, false, 8714, 10) -- Dalaran to Argus
 end
 
+-- WoW's Anniversary (retail): Orgrimmar / Stormwind <-> Caverns of Time event portals.
+-- Coords: Stormwind Wizard's Sanctum 43.7,85.4 and Orgrimmar Pathfinder's Den 56.4,92.5
+-- (warcraft.wiki.gg); CoT landing matches the existing Dalaran edge (map 74 / area 2300).
+-- Active only while the anniversary holiday runs (calendar event 1808; Nov 17–Dec 8 2026).
+if not FarstriderLibData.CLASSIC_WORLD then
+    local anniversary = function() return FarstriderLibData.Util.IsWowAnniversaryActive() end
+    if UnitFactionGroup("player") == "Alliance" then
+        addPortal(true, 84, { x = 0.4370, y = 0.8540, z = 0 }, true, 1519, 74, { x = 0.5460, y = 0.2830, z = 0 }, true, 2300, 10, anniversary) -- Stormwind <-> Caverns of Time (Anniversary)
+    end
+    if UnitFactionGroup("player") == "Horde" then
+        addPortal(true, 85, { x = 0.5640, y = 0.9250, z = 0 }, true, 1637, 74, { x = 0.5460, y = 0.2830, z = 0 }, true, 2300, 10, anniversary) -- Orgrimmar <-> Caverns of Time (Anniversary)
+    end
+end
+
 local itemCount = 0
 local helpfulItems = {}
 
