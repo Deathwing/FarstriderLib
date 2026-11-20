@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Fixed
+- Preflight's "Player map position" check is skipped inside instances, where the game gives no position, instead of failing.
 - Loads as up to date on Midnight 12.1.7 (interface 120107).
 
 ### Added
