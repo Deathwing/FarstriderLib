@@ -28,6 +28,10 @@ local config    = FarstriderLib_API.DATA.CONFIG
 
 The legacy `FarstriderLib.FindTrail` / `FarstriderLib.FindTrailTo` globals still work but will be removed in a future update.
 
+### Tab completion
+
+The debug build's `/fslog` command completes with Tab when Gilded is installed (no dependency on it); a Tab on it prints its usage line.
+
 ### Dependency
 
 **FarstriderLibData** provides the waypoint graph, map overrides, and supporting navigation data. For standalone installs, it should be installed alongside this library. In embedded addon setups, both packages may already be bundled by the parent addon.

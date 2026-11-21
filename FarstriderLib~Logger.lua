@@ -275,3 +275,13 @@ SlashCmdList.FARSTRIDERLOG = function()
         Logger.frame:Show()
     end
 end
+
+-- Tab completion for /fslog through Gilded's engine (GildedKit.Tab). Queued at file load in the
+-- global GildedTabComplete, which Gilded reads on the first Tab; nothing here needs Gilded.
+-- /fslog takes no words, so its tree is the one line a Tab on it prints.
+GildedTabComplete = GildedTabComplete or {}
+table.insert(GildedTabComplete, {
+    addon = "FarstriderLib",
+    slash = "/fslog",
+    tree  = { hint = "/fslog  show or hide the FarstriderLib log window" },
+})

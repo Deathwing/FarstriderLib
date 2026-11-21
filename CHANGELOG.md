@@ -7,6 +7,7 @@
 - Loads as up to date on Midnight 12.1.7 (interface 120107).
 
 ### Added
+- Tab completes `/fslog` (debug builds) in the chat box when Gilded is installed; it takes no words, so a Tab on it prints its usage line. Retail and Forever alike.
 - Orgrimmar and Stormwind portals to the Caverns of Time during WoW's Anniversary (Nov 17–Dec 8).
 
 ## 1.4.4
